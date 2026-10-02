@@ -1,0 +1,1008 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>SOL. 30</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* 배치: 왼쪽 좁은 단은 주변, 가운데는 장소 이름 아래 나레이션과 작은 버튼 묶음, 오른쪽은 테두리 상자 하나에 상태, 맨 아래는 글자 메뉴. 선과 여백만으로 나눈다. */
+:root{
+  color-scheme:dark;
+  --void:#07090b;          /* 불 꺼진 선실 */
+  --hull:#10151a;          /* 벽면 금속 */
+  --rule:#27313a;          /* 이음매 */
+  --ink:#d3dade;           /* 글자: 찬 쪽으로 기운 흰색 */
+  --ink-dim:#8c9aa1;       /* 식은 글자 */
+  --lamp:#c8392b;          /* 비상등 */
+  --amber:#d59a3a;         /* 동면 장치 표시창, 분기 */
+  --term:#7fbf8e;          /* 단말 글자 */
+  --f-story:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-data:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+  --glow:0;
+}
+html,body{height:100%}
+body{background:var(--void);color:var(--ink);font-family:var(--f-story);font-size:15px;line-height:1.6;position:relative;overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 45% at 50% 0%,rgba(200,57,43,.22),transparent 70%);
+  opacity:var(--glow);transition:opacity 1.8s ease}
+body.breathing::before{animation:breathe 4.5s ease-in-out infinite}
+@keyframes breathe{0%,100%{opacity:calc(var(--glow)*.45)}50%{opacity:var(--glow)}}
+@keyframes arrive{from{opacity:0}}
+.ship{position:relative;box-sizing:border-box;max-width:1020px;margin:0 auto;padding-inline:20px;padding-block:22px 16px;min-height:100%;
+  display:grid;grid-template-columns:210px minmax(0,1fr) 200px;grid-template-rows:1fr auto;
+  grid-template-areas:"env main side" "foot foot foot";gap:20px 44px}
+h2,h3{font:inherit;margin:0}
+/* 왼쪽: 주변 */
+.env{grid-area:env;min-width:0;max-height:calc(100vh - 96px);overflow-y:auto;display:flex;flex-direction:column;gap:10px;font-size:14.5px;line-height:1.65}
+.env h2{color:var(--ink)}
+.env-lines{display:flex;flex-direction:column;gap:.75em;color:var(--ink-dim)}
+.env-lines p{margin:0;animation:arrive .9s ease both}
+.look{display:flex;flex-wrap:wrap;gap:2px 12px;font-size:13px;color:var(--ink-dim);margin-top:6px}
+/* 가운데: 장소, 나레이션, 선택 */
+.main{grid-area:main;min-width:0;min-height:0;display:flex;flex-direction:column;gap:14px}
+.where{display:flex;align-items:baseline;gap:14px}
+.where{flex-wrap:wrap;gap:4px 14px}
+.where .day{white-space:nowrap}
+.locs{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 0;font-size:15.5px}
+.locs>*{padding:0 12px;border-left:1px solid var(--ink-dim)}
+.locs>*:first-child{padding-left:0;border-left:0}
+.locs button{width:auto;border-top:0;border-right:0;border-bottom:0;font-size:inherit;color:var(--ink-dim);overflow:visible}
+.locs button:hover:not(:disabled){background:transparent;color:var(--ink)}
+.locs button:disabled{color:#56636a;border-color:var(--ink-dim)}
+.locs .on,.locs button.on:disabled{color:var(--ink);text-decoration:underline;text-underline-offset:5px}
+.story{font-size:15.5px;line-height:1.95}
+.story h3{font-family:var(--f-data);font-size:13px;letter-spacing:.2em;color:var(--amber);margin:2.2em 0 1em}
+.story h3:first-of-type{margin-top:.4em}
+.story p{margin:0 0 .85em;text-indent:1em}
+.story p.bg{color:var(--ink-dim)}
+.story p.aside{color:var(--ink-dim)}
+.story p.term{font-family:var(--f-data);font-size:13.5px;color:var(--term);text-indent:0;padding-left:1em;line-height:1.7}
+.story .journal{margin:1.4em 0 .4em}
+.story .journal p,.story p.empty{text-indent:0}
+.warn{color:var(--lamp);font-weight:500}
+.plates{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}
+button.plate{width:100%;text-align:left;padding:5px 10px;display:flex;flex-direction:column;gap:1px;border-color:var(--ink-dim)}
+button.plate strong{font-weight:500;font-size:14px}
+button.plate small{font-size:12.5px;color:var(--ink-dim);line-height:1.45}
+button.plate small.rel{color:var(--ink)}
+button.plate small.mark{color:var(--amber)}
+button.plate.sel{border-color:var(--amber);box-shadow:inset 0 0 0 1px var(--amber)}
+.where .day{color:var(--ink-dim);font-size:13px;border-left:1px solid var(--ink-dim);padding-left:14px}
+.where .day:empty{display:none}
+.log{display:flex;flex-direction:column-reverse;flex:1 1 0;min-height:76px;max-height:340px;overflow:hidden;cursor:default;line-height:1.7;
+  -webkit-mask-image:linear-gradient(transparent,#000 55%);mask-image:linear-gradient(transparent,#000 55%)}
+.log p{margin:0;animation:arrive .9s ease both}
+.log p.gap{margin-top:.7em}
+.log p.aside{color:var(--ink-dim)}
+.log p.term{font-family:var(--f-data);font-size:13.5px;color:var(--term)}
+.acts{display:flex;flex-direction:column;gap:12px}
+.cols{display:flex;flex-direction:column;gap:10px}
+.grp{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+button.busy:disabled{color:var(--ink);border-color:var(--ink)}
+.bar{display:inline-block;width:64px;height:8px;border:1px solid var(--ink);vertical-align:middle;position:relative}
+.bar b{position:absolute;left:0;top:0;bottom:0;background:var(--ink)}
+.bar.low{border-color:var(--lamp)}.bar.low b{background:var(--lamp)}
+.row{display:flex;flex-wrap:wrap;gap:6px}
+button.mini{width:auto;min-width:58px;padding:5px 10px}
+.grp h3{font-size:13.5px;color:var(--ink-dim);flex:0 0 100%;margin-bottom:-2px}
+.grp .hint{margin-left:6px}
+button{font:inherit;font-size:14.5px;color:var(--ink);background:transparent;border:1px solid var(--ink);border-radius:0;
+  width:154px;max-width:100%;padding:5px 6px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:background .2s,color .2s,border-color .2s}
+button:hover:not(:disabled){background:var(--hull)}
+button:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+button:disabled{color:#56636a;border-color:var(--rule);cursor:default}
+button .cool{position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(211,218,222,.14);pointer-events:none}
+button.fork{border-color:var(--amber);color:var(--amber);box-shadow:inset 0 0 0 2px var(--void),inset 0 0 0 3px var(--amber)}
+button.fork:disabled{border-color:var(--rule);color:#56636a;box-shadow:none}
+button.wide{width:230px}
+.hint{font-size:13px;color:var(--ink-dim);margin:0}
+/* 오른쪽: 상태 상자 */
+.side{grid-area:side;min-width:0;align-self:start;display:flex;flex-direction:column;gap:10px}
+fieldset{border:1px solid var(--ink);margin:0;padding:2px 12px 8px;min-width:0}
+legend{padding:0 4px;margin-left:-4px;font-size:14.5px}
+.gauges{display:grid;grid-template-columns:1fr auto;gap:1px 12px;margin:0;font-variant-numeric:tabular-nums}
+.gauges dd{margin:0;text-align:right}
+.gauges .none{grid-column:1/-1;color:var(--ink-dim)}
+.pips{display:inline-flex;gap:4px;vertical-align:middle}
+.pips i{width:8px;height:8px;border:1px solid var(--ink);display:block}
+.pips i.spent{background:var(--ink)}
+.goal{font-size:13px;color:var(--ink-dim);margin:0}
+/* 아래: 글자 메뉴 */
+.foot{grid-area:foot;display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:4px 22px;font-size:13.5px;color:var(--ink-dim);padding-top:8px}
+.foot .name{letter-spacing:.18em;font-family:var(--f-data);color:var(--ink);font-weight:500}
+.foot button,.look button{width:auto;border:0;padding:0;font-size:inherit;color:var(--ink-dim);text-align:left}
+.foot button:hover:not(:disabled),.look button:hover:not(:disabled){background:transparent;color:var(--ink);text-decoration:underline;text-underline-offset:4px}
+.foot button[aria-selected="true"],.look button.on{color:var(--ink)}
+.foot button.danger{color:var(--lamp)}
+.foot #restartBox{display:inline-flex;gap:12px;align-items:baseline}
+/* 일지와 기록 */
+.journal{border:1px solid var(--rule);background:var(--hull);padding:14px 16px 16px;line-height:1.8}
+.journal h2{font-family:var(--f-data);font-size:12.5px;letter-spacing:.12em;color:var(--amber);margin-bottom:10px}
+.journal p{margin:0 0 .8em}
+.journal p:last-child{margin-bottom:0}
+.debug{font-family:var(--f-data);font-size:12px;color:var(--ink-dim);margin:10px 0 0}
+#night{display:flex;flex-direction:column;gap:12px}
+.record{grid-column:1/-1;min-width:0;max-width:640px;display:flex;flex-direction:column;gap:26px}
+.record>div>h2{color:var(--ink-dim);font-size:13.5px;margin-bottom:8px;text-decoration:underline;text-underline-offset:5px}
+.record .hist{display:flex;flex-direction:column;line-height:1.7}
+.record .hist p{margin:0}
+.record .hist p.act{font-size:13px;color:var(--amber);margin-top:.9em}
+.record .hist p.act:first-child{margin-top:0}
+.record .hist p.bg,.record .hist p.aside{color:var(--ink-dim)}
+.record .hist p.bg{padding-left:12px;border-left:1px solid var(--rule)}
+.record .hist p.term{font-family:var(--f-data);font-size:13.5px;color:var(--term)}
+.record .runs{display:flex;flex-direction:column;gap:12px}
+.record .empty{color:var(--ink-dim);margin:0}
+@media (max-width:760px){
+  .ship{grid-template-columns:minmax(0,1fr);grid-template-rows:none;grid-template-areas:"side" "main" "env" "foot";gap:16px;align-content:start;padding-block:16px 16px}
+  .log{flex:none;height:180px}
+  .env{max-height:none;overflow:visible}
+  .grp button{width:calc(50% - 3px)}
+  .plates{grid-template-columns:minmax(0,1fr)}
+  .row>button:first-child{width:100%}
+  button.wide{width:100%}
+  .gauges{display:flex;flex-wrap:wrap;gap:0 6px}
+  .gauges dd{margin-right:12px}
+  .record{grid-row:1}
+}
+@media (max-height:720px) and (min-width:761px){
+  body{font-size:14px}
+  .ship{padding-block:12px 8px;gap:10px 44px}
+  .main{gap:9px}.acts{gap:8px}.cols{gap:7px}.grp{gap:5px}
+  button{padding:3px 6px;font-size:13.5px}
+  button.plate{padding:3px 10px}button.plate small{font-size:12px;line-height:1.35}
+  .log{line-height:1.6}
+  .foot{padding-top:2px}
+}
+@media (prefers-reduced-motion:reduce){.log p,.env-lines p{animation:none}body.breathing::before{animation:none}body::before{transition:none}}
+</style>
+
+</head>
+<body>
+<div class="ship">
+  <section class="record" id="record" hidden></section>
+  <aside class="env" id="envCol">
+    <h2 id="envName">어둠</h2>
+    <div class="env-lines" id="env"><p>보이지 않는다.</p></div>
+    <div class="look" id="look" hidden></div>
+  </aside>
+  <section class="main" id="mainCol">
+    <div class="where"><div class="locs" id="place"></div><span class="day" id="day"></span></div>
+    <div class="log" id="log" aria-live="polite" title="누르면 글이 바로 나옵니다"></div>
+    <div class="acts" id="acts"></div>
+    <p class="hint" id="hint" hidden></p>
+    <div id="night" hidden></div>
+  </section>
+  <aside class="side" id="sideCol">
+    <fieldset><legend>상태</legend><dl class="gauges" id="gauges"></dl></fieldset>
+    <p class="goal" id="goal" hidden></p>
+  </aside>
+  <footer class="foot" id="tabs">
+    <span class="name">SOL. 30</span>
+    <button type="button" id="tabPlay" role="tab" aria-selected="true">플레이.</button>
+    <button type="button" id="tabRec" role="tab" aria-selected="false">기록.</button>
+    <span id="restartBox"><button type="button" id="restart">재시작.</button></span>
+  </footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id);
+const DAY=240,HOUR=15,SAVE="sol30-save",RUNS="sol30-runs";
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+
+function fresh(){
+  const pods=[];for(let i=0;i<8;i++)pods.push(Math.random()<.35);
+  return{v:2,day:1,phase:"intro",loc:"cabin",locs:["cabin"],light:false,
+    power:0,clock:0,aP:0,aO:0,warm:6,hunger:6,food:0,oxy:12,filters:0,samples:0,analyzed:0,data:0,
+    approach:0,contam:0,mood:{calm:0,cur:0,anx:0,obs:0},last:"calm",
+    done:{},daily:{},seen:{},told:{},rec:{},choice:{},fork:null,pickSel:null,
+    job:null,mach:null,spin:null,pick:false,dim:false,streak:0,lastCrank:0,turns:0,idle:0,quiet:0,chair:0,
+    nudgeAt:-99,nudgeI:0,dark0:0,ambI:0,notes:[],journal:[],log:[],hist:[],env:{name:"어둠",lines:["보이지 않는다."]},
+    pods:pods,marks:[],helper:null,dz:{},dzs:{},cause:null};
+}
+let s=fresh(),queue=[],timer=null,cooling=false,view="play",runs=[],lastT=Date.now();
+try{runs=JSON.parse(localStorage.getItem(RUNS)||"[]")||[]}catch(e){runs=[]}
+
+/* ───────── 글: 장소와 사물 ───────── */
+const LOC={cabin:{name:"선실",bg:"room"},hall:{name:"통로",bg:"hall"},mess:{name:"식당",bg:"mess"},cargo:{name:"화물칸",bg:"cargo"},
+  lab:{name:"실험실",bg:"lab"},port:{name:"관측창",bg:"port"},cryo:{name:"동면실",bg:"cryo"}};
+const BG={
+ room:{n:"선실",l:["좁은 방이다. 침상 하나, 접이식 책상 하나, 벽에 박힌 동면 장치 하나.","바닥은 문 쪽으로 기울어 있다. 고정되지 않은 것은 전부 그쪽에 모여 있다.","비상등의 붉은빛이 천장에서 떨어진다. 구석까지는 닿지 않는다.","환기구는 조용하다. 공기에서 오래된 금속 냄새가 난다."]},
+ roomDim:{n:"선실",l:["비상등이 숨 쉬듯 밝아졌다 어두워진다. 구석의 어둠이 넓어졌다."]},
+ gen:{n:"수동 발전기",at:"cabin",l:["벽에서 접어 내리는 손잡이다. 비상용이라 붉게 칠해져 있고, 칠은 한 번도 벗겨진 적이 없다.","손잡이 아래 명판. 분당 60회전 권장. 연속 사용 20분 이내.","축 주위에 윤활유가 굳어 말라붙어 있다. 처음 몇 바퀴는 그것을 깨는 일이다."]},
+ genWorn:{n:"수동 발전기",l:["벽에서 접어 내리는 손잡이다. 손 닿는 자리만 붉은 칠이 벗겨져 쇠가 드러났다.","손잡이 아래 명판. 분당 60회전 권장. 연속 사용 20분 이내. 지킨 적이 없다.","축은 이제 매끄럽게 돈다. 굳은 윤활유는 다 깨져 바닥에 떨어져 있다."]},
+ term:{n:"단말",at:"cabin",l:["책상에 박힌 화면이다. 모서리에 금이 가 있지만 켜진다.","글자는 초록색이다. 밝기를 낮출 수 없다.","자판의 몇 글자는 닳아 있다. 가장 많이 닳은 것은 지움 글쇠다."]},
+ board:{n:"배전반",at:"cabin",l:["문 옆의 덮개를 열면 나온다.","회로는 스물넷. 표시등이 들어온 것은 셋이다. 나머지의 이름표를 읽어 본다. 기관, 항법, 중력, 조리. 지금은 이름뿐이다."]},
+ pod:{n:"내 동면 장치",at:"cabin",l:["벽에 세워진 관 같은 것이다. 그렇게 부르지 말라고 교육받았다.","덮개 안쪽의 완충재에 내 몸 모양이 남아 있다. 천천히 올라오는 중이다.","표시창은 호박색이다. 건드리지 않아도 한 줄이 떠 있다. 개방 횟수 2."]},
+ hall:{n:"통로",l:["통로는 배의 등뼈다. 모든 방이 여기로 열린다.","천장이 낮아 고개를 조금 숙여야 한다. 벽에는 손잡이 줄이 길게 이어져 있다. 무중력에서 쓰던 것이다. 지금은 기울기 때문에 쓴다.","다섯 걸음마다 비상등. 그 사이의 어둠에서 물 떨어지는 소리가 난다."]},
+ lockers:{n:"비품함",at:"hall",l:["통로 벽에 박힌 비품함 여섯. 문짝이 얇다. 둘은 추락 때 우그러져 열리지 않는다.","안쪽에 점검표가 붙어 있다. 점검자 서명란은 매번 같은 글씨다."]},
+ purifier:{n:"산소 정제기",at:"hall",l:["통로 벽감에 들어앉은 회색 상자다. 허리 높이.","앞면에 필터 서랍이 셋. 서랍마다 교체일을 적는 칸이 있다. 마지막 기록은 출발 전이다.","돌 때는 덜컹거린다. 덜컹거림이 멎으면 그때가 문제다."]},
+ cockpit:{n:"조종실 앞",at:"hall",l:["통로의 맨 앞이다. 여기서부터 바닥이 구겨져 있다.","문틀이 안쪽으로 접혔다. 틈은 팔 하나가 들어갈 만하다.","틈에서 찬 공기가 나온다. 흙냄새가 섞여 있다."]},
+ cryodoor:{n:"동면실 앞",at:"hall",l:["문은 다른 문보다 두껍다. 손을 대면 손바닥이 달라붙을 만큼 차다.","눈높이에 손바닥만 한 창이 있다. 안쪽에 성에가 끼어 있다.","문 옆 패널에 숫자가 떠 있다. 필요 전력 40."]},
+ mess:{n:"식당",l:["배에서 가장 넓은 방이다. 그래도 넓지는 않다.","식탁은 바닥에 볼트로 박혀 있다. 누군가 두고 간 카드 한 벌이 기울기를 따라 부채꼴로 흘러 있다.","조리기의 표시창은 꺼져 있다. 벽시계는 추락한 시각에 멈춰 있다."]},
+ cargo:{n:"화물칸",l:["천장이 높다. 손전등 빛이 끝까지 닿지 않는다.","화물 상자들은 고정 띠에 매달린 채 한쪽으로 쏠려 있다. 띠가 삐걱거린다.","먼 쪽 벽은 벽이 아니다. 찢어진 외판을 비상 격벽이 막고 있다. 격벽 가장자리에 서리가 아니라 물기가 맺혀 있다."]},
+ lab:{n:"실험실",l:["흰 방이다. 붉은 비상등 아래에서는 분홍으로 보인다.","작업대 셋, 분석기 하나, 밀폐 작업함 하나. 벽에는 빈 표본 용기가 줄지어 걸려 있다. 삼백 개쯤 된다. 채우러 온 것들이다.","소독약 냄새가 아직 남아 있다. 이 배에서 유일하게 익숙한 냄새다."]},
+ analyzer:{n:"분석기",at:"lab",l:["작업대 하나를 다 차지한다. 이 배에서 가장 비싼 물건이라고 들었다.","시료 투입구는 손톱만 하다.","대기등이 삼 초에 한 번 깜빡인다. 푸른색이다."]},
+ camera:{n:"외부 카메라 화면",at:"lab",l:["벽의 작은 화면이다. 넷으로 나뉘어 있고 셋은 검다.","살아 있는 하나는 선체의 한쪽 면을 비춘다. 화질이 거칠다. 움직이는 것이 있어도 잡음과 구분하기 어렵다.","화면 아래에 손글씨 쪽지가 붙어 있다. 렌즈 청소는 선외 활동 때."]},
+ port:{n:"관측창",l:["통로 중간, 벽이 바깥으로 불룩한 자리다. 두 사람이 나란히 설 수 있다.","유리는 손바닥 세 개 두께다. 가장자리에 가는 금이 하나 있다.","유리에 이마를 대면 차다. 바깥의 차가움이 아니라 유리의 차가움이다."]},
+ cryo:{n:"동면실",l:["숨을 쉬면 폐가 시리다.","장치는 좌우로 넷씩. 가운데로 한 사람이 지나갈 길이 나 있다.","장치마다 배관이 천장으로 올라가 한데 묶인다. 묶음에서 낮고 고른 소리가 난다. 추락 뒤에도 멈추지 않은 소리는 이 배에서 이것 하나다.","바닥은 깨끗하다. 여기에는 물기가 없다. 아직은."]},
+ plate:{n:"동면 장치의 명판",at:"cryo",l:["손바닥만 한 금속판이다. 번호는 찍혀 있고, 나머지는 새겨져 있다.","서리를 닦아야 읽힌다. 닦은 자리는 금방 다시 흐려진다."]}
+};
+/* 상태에 따라 덧붙는 묘사 */
+const BGX=[
+ {k:"hall",c:()=>s.day>=3,t:"손잡이 줄이 미끄럽다. 물기가 아니다."},
+ {k:"lab",c:()=>s.samples>0,t:"용기 하나가 채워져 있다. 이백아흔아홉 개가 남았다."},
+ {k:"port",c:()=>s.seen.nightScene,t:"유리에 내 얼굴이 비친다. 그 너머에 비치지 않는 것들이 있다."},
+ {k:"cargo",c:()=>s.day>=5,t:"격벽 가장자리의 물기가 말랐다. 그 자리에 엷은 막이 남았다."},
+ {k:"gen",c:()=>s.seen.nightCrank,t:"돌리기 전에 창 쪽을 한 번 보게 된다."}
+];
+const INTRO=["어둡다.","차갑다. 숨이 하얗게 나온다.","등 뒤에서 동면 장치의 덮개가 천천히 식는다. 표시창에 글자 한 줄이 남아 있다. 개방 횟수 2.","바닥이 기울어 있다. 어디선가 금속이 식으며 틱, 틱 소리를 낸다.","벽을 더듬는다. 손잡이가 잡힌다. 수동 발전기다."];
+const CRANK=["발전기가 낮게 운다.","한 바퀴. 또 한 바퀴.","손잡이가 돈다. 팔이 따뜻해진다.","울음이 조금 높아진다.","손바닥이 쓸린다. 계속 돌린다.","축이 덜 뻑뻑하다."];
+const NUDGE=["전력이 금방 떨어진다. 몇 바퀴 더 돌려 둘까.","서너 바퀴로는 오래가지 않는다.","비상등이 조금 어두워졌다. 더 돌려야 한다.","돌린 것보다 새는 것이 빠르다. 한 번에 몰아서 돌리는 편이 낫겠다."];
+const AMB=["틱. 금속이 식는 소리.","환기구는 여전히 조용하다.","발전기의 울음이 조금씩 낮아진다.","비상등이 한 번 떨린다.","먼지가 붉은빛 속에서 천천히 내려앉는다.","선체 어딘가에서 길게 삐걱거리는 소리가 난다.","숨소리가 크게 들린다. 내 것이다."];
+/* 쓸모없는 말: d는 그 날부터 */
+const ASIDE=[
+ {d:1,t:"배가 고프다. 방금 먹은 것 같은데."},{d:1,t:"발전기 손잡이에 누군가 테이프를 감아 놓았다. 손에 딱 맞는다. 누구 손에 맞춘 것일까."},
+ {d:1,t:"동면에서 깨면 한동안 단것이 당긴다고 했다. 사실이다."},{d:1,t:"콧노래가 나온다. 무슨 노래인지 모르겠다. 후렴만 안다."},
+ {d:1,t:"양말 한 짝이 없다. 추락과는 관계없는 일 같다."},{d:1,t:"기울어진 바닥에 익숙해졌다. 컵을 내려놓을 때만 빼고."},
+ {d:1,t:"박사 학위는 이런 상황에 쓸모가 없다. 발전기는 학위를 묻지 않는다."},{d:1,t:"시계를 본다. 이 행성의 하루가 몇 시간인지 아직 모른다. 그래도 본다."},
+ {d:1,t:"출발 전에 화분에 물을 주고 왔는지 생각한다. 주고 왔다. 아마."},{d:1,t:"비상등은 붉다. 붉은 조명 아래에서는 누구나 피곤해 보인다고 들었다. 거울이 없어서 확인할 수 없다."},
+ {d:2,t:"식당 벽에 당번표가 붙어 있다. 이번 주 설거지는 06번이다. 06번은 자고 있다."},{d:2,t:"통로 벽의 안전 수칙 4번. 선내에서 뛰지 말 것. 뛸 곳이 없다."},
+ {d:3,t:"실험실 냉장고에 누군가의 도시락이 있다. 번호표가 붙어 있다. 손대지 않는다."},{d:3,t:"표본에게 말을 걸었다. 대답은 없다. 다행이다."},
+ {d:4,t:"형체의 수를 세다가, 양을 세는 것 같다고 생각한다. 잠은 오지 않는다."},{d:4,t:"커피가 있다. 물을 끓일 전력이 아깝다. 찬물에 탄다. 후회한다."},
+ {d:5,t:"02번 명판 아래에 누군가 작은 글씨로 적어 놓았다. 깨우면 시끄러움."},{d:5,t:"여덟 명 중에 내 생일을 아는 사람이 있을까 생각한다. 쓸데없는 생각이다."},
+ {d:1,t:"이 배의 이름을 지은 사람은 시인이었다고 들었다. 지금은 아무도 그 이름으로 부르지 않는다."},
+ {d:1,loc:"cabin",t:"발전기 소리에 박자를 붙여 본다. 사분의 삼박자다. 왈츠를 출 줄은 모른다."},
+ {d:1,t:"어머니는 내가 별을 보는 일을 한다고 믿는다. 정정하지 않았다."},
+ {d:1,t:"신발 끈을 다시 묶는다. 풀린 적은 없다."},
+ {d:1,t:"깨어나서 처음 한 말이 무엇이었는지 생각한다. 아직 아무 말도 하지 않았다."},
+ {d:1,t:"침상의 이불은 개어져 있다. 내가 갠 것이 아니다. 출발 전의 내가 갠 것이다."},
+ {d:2,t:"말을 하지 않은 지 며칠째인지 센다. 세다가 소리 내어 센다. 목소리가 낯설다."},
+ {d:2,t:"혼잣말이 늘었다. 대답하지만 않으면 괜찮다고 배웠다."},
+ {d:2,t:"손톱 밑이 까맣다. 윤활유다. 윤활유일 것이다."},
+ {d:2,t:"지구 시간으로 지금이 무슨 요일인지 계산한다. 화요일이다. 화요일 같지 않다."},
+ {d:2,t:"붉은빛 아래에서는 피와 녹을 구분할 수 없다. 구분할 일이 없기를 바란다."},
+ {d:2,loc:"hall",t:"통로를 걸을 때마다 발소리를 센다. 선실에서 식당까지 열일곱 걸음. 어제는 열여섯이었다."},
+ {d:2,loc:"hall",t:"손잡이 줄에 미지근한 자리가 있다. 누군가 방금 잡았던 것처럼. 내 손이었을 것이다."},
+ {d:2,loc:"mess",t:"식탁에 앉는다. 아홉 자리 중 내 자리가 어디였는지 기억나지 않는다. 아무 데나 앉는다."},
+ {d:2,loc:"mess",t:"멈춘 벽시계를 본다. 멈춘 시계도 하루에 두 번은 맞는다. 이 행성에서는 그것도 아니다."},
+ {d:2,loc:"cargo",t:"상자마다 조사단의 표식이 찍혀 있다. 출발할 때는 그 표식이 자랑스러웠다."},
+ {d:2,c:()=>s.done.h_cockpit,t:"조종사의 이름을 안다. 일지에는 적지 않았다. 적으면 정말로 죽은 사람이 된다."},
+ {d:2,c:()=>s.done.h_cockpit,t:"빈 좌석이 더 신경 쓰인다. 죽은 사람은 어디에 있는지 안다."},
+ {d:3,t:"논문 심사 때 받은 질문이 생각난다. 표본이 하나뿐이면 어떻게 할 것인가. 그때는 웃었다."},
+ {d:3,loc:"lab",t:"실험실에서는 손이 저절로 움직인다. 여기서만 내가 무엇을 하는 사람인지 안다."},
+ {d:3,loc:"lab",t:"표본 용기 삼백 개. 출발 전에는 모자랄까 걱정했다."},
+ {d:3,c:()=>s.samples>0,t:"표본에 번호를 붙였다. 1호. 2호가 생기지 않기를 바라는 것은 과학자의 태도가 아니다."},
+ {d:3,c:()=>s.choice.f3==="shock",t:"가루가 묻은 장갑을 벗는다. 벗은 손을 한참 본다."},
+ {d:3,c:()=>s.choice.f3==="burn",t:"태운 것은 표본 하나다. 필터의 얼룩은 태울 수 없다. 배를 태울 수는 없다."},
+ {d:3,t:"학생 때 처음 현미경으로 본 것은 양파 껍질이었다. 그때도 숨을 참았다."},
+ {d:4,loc:"port",t:"유리에 입김이 서린다. 지우지 않는다. 안쪽에 무언가 살아 있다는 표시가 된다."},
+ {d:4,loc:"port",t:"능선의 수를 센다. 일곱. 세는 것 말고는 할 수 있는 관측이 없다."},
+ {d:4,c:()=>s.seen.nightScene,t:"밖에 있는 것들에게 이름을 붙이지 않기로 한다. 이름을 붙이면 부르게 된다."},
+ {d:4,c:()=>s.seen.nightScene,t:"창을 등지고 앉는다. 등이 더 차갑다."},
+ {d:4,c:()=>s.rec.ridgelight,t:"능선의 불빛을 누가 돌리는지 묻지 않기로 한다. 아직은."},
+ {d:4,t:"조사 계획서 첫 장에는 이렇게 적혀 있었다. 현지 생물과의 접촉은 최소화한다."},
+ {d:5,loc:"cryo",t:"장치 앞에서 목소리를 낮춘다. 들을 사람은 없다. 그래도 낮춘다."},
+ {d:5,loc:"cryo",t:"여덟 명의 얼굴을 떠올려 본다. 다섯까지 떠오른다."},
+ {d:5,t:"누군가 깨어나면 첫마디로 무슨 말을 할지 연습한다. 추락했습니다. 다른 말로 시작하고 싶다."},
+ {d:5,t:"닷새 동안 내 이름을 부른 사람이 없다. 내가 불러 본다. 어색하다."},
+ {d:1,c:()=>s.hunger<=3,t:"배에서 소리가 난다. 조용한 배에서는 그것도 사건이다."},
+ {d:1,c:()=>s.warm<=4,t:"손을 겨드랑이에 넣는다. 이런 자세로 박사 학위를 받은 것은 아니다."},
+ {d:1,c:()=>s.power<=4&&s.light,t:"전력계의 숫자를 본다. 숫자가 나를 본다."},
+ {d:1,c:()=>s.seen.dream,t:"꿈에서 본 얼굴을 떠올리려 한다. 서리만 떠오른다."},
+ {d:1,c:()=>s.seen.battery,t:"의자 밑에 축전지를 끼워 둔 사람을 생각한다. 수평을 맞추려던 것이다. 꼼꼼한 사람이다."},
+ {d:1,c:()=>s.seen.tally,t:"마흔아홉. 쉰 번째를 돌린 것은 나다."},
+ {d:2,c:()=>s.oxy<=6,t:"숨을 크게 쉬어 본다. 크게 쉴수록 줄어든다는 것을 안다. 그래도 쉰다."}
+];
+/* 되풀이하는 일은 할 때마다 글이 달라진다 */
+const VAR={
+ eat:[
+  ["포장을 뜯는다. 회색 덩어리가 나온다. 냄새는 없다.","한 입 벤다. 젖은 종이를 씹는 것 같다. 씹을수록 입안의 침을 가져간다.","맛이라고 부를 것은 끝에 남는 희미한 짠맛뿐이다. 삼킨다. 살기 위해 먹는 음식이다."],
+  ["또 한 포를 뜯는다. 포장에는 닭고기 맛이라고 적혀 있다.","닭을 본 적 없는 사람이 닭 이야기를 전해 듣고 만든 맛이다.","물 없이 삼키려다 목에 걸린다. 가슴을 두드린다."],
+  ["이번 것은 채소 스튜 맛이다.","같은 종이다. 종이에 초록색을 칠했을 뿐이다.","영양 성분표를 읽으며 씹는다. 읽을 것이 있어서 다행이다."],
+  ["씹는다. 턱이 일을 한다는 느낌만 있다.","이것을 개발한 사람도 박사였을 것이다. 같은 박사로서 묻고 싶다. 직접 먹어 보았느냐고.","삼킨다. 배는 찬다. 그것만은 인정한다."],
+  ["포장을 뜯는 손이 망설인다. 손도 아는 것이다.","지구에서는 음식 사진을 찍는 사람들을 비웃었다. 지금은 사진이라도 보고 싶다.","다 먹는다. 남길 처지가 아니다."],
+  ["먹는다. 맛을 묘사하는 일은 그만두기로 한다. 묘사할 것이 없다.","외계 생명체를 찾아 여기까지 와서, 가장 자주 하는 일이 종이를 씹는 일이다.","웃음이 나온다. 웃으니 부스러기가 튄다. 아깝다."],
+  ["혀가 익숙해졌다. 익숙해졌다는 사실이 조금 슬프다.","그래도 씹는다. 서른 번을 센다. 어릴 때 그렇게 배웠다.","이 맛에 서른 번은 과분하다."],
+  ["한 포를 반으로 쪼갠다. 단면도 회색이다. 속까지 정직한 음식이다.","불평할 상대가 없어서 포장지에 대고 불평한다.","포장지는 듣기만 한다. 좋은 청자다."]],
+ rest:[
+  ["벽에 등을 대고 눈을 감는다.","발전기가 식는 소리. 그보다 먼 곳에서 나는 소리."],
+  ["침상에 눕는다. 기울기 때문에 몸이 한쪽으로 쏠린다.","잠은 오지 않는다. 눈만 감고 있다. 그것도 쉬는 것이라고 정한다."],
+  ["눈을 감는다. 감은 눈 안쪽도 붉다. 비상등 때문이다.","잠깐 정신을 놓았다. 얼마나 지났는지 모른다. 모른다는 것이 싫다."],
+  ["벽에 기댄다. 벽이 등의 온기를 가져간다.","쉬는 것도 일처럼 한다. 학위를 따던 시절에 생긴 버릇이다."]],
+ warm:[
+  ["발전기 몸체에 두 손을 댄다. 돌린 만큼 따뜻하다.","손가락이 다시 굽혀진다."],
+  ["발전기를 끌어안듯 손을 댄다. 남이 보면 우스울 자세다.","볼 사람이 없다. 그것이 다행인지는 모르겠다."],
+  ["손바닥, 손등, 다시 손바닥. 고기 굽듯 뒤집는다.","고기 생각은 하지 않으려 했는데 해 버렸다."]],
+ purify:[
+  ["필터를 끼우고 정제기를 돌린다. 덜컹거리다 고르게 돈다.","공기가 조금 가벼워진다."],
+  ["필터 서랍을 연다. 헌 필터는 회색이 아니라 갈색이 되어 있다.","새 필터를 끼운다. 숨 쉬는 일에도 재고가 있다는 것을 여기 와서 알았다."],
+  ["정제기를 돌린다. 덜컹거림이 오늘은 조금 길다.","기계에게 잘 부탁한다고 말한다. 말하고 나서 주위를 둘러본다."],
+  ["필터를 간다. 손이 순서를 외웠다.","교체일 칸에 날짜를 적는다. 지구 날짜로 적는다. 다른 날짜를 모른다."]]
+};
+function linesFor(a){const v=VAR[a.id];if(!v)return a.lines;s.cnt=s.cnt||{};const n=s.cnt[a.id]||0,L=v.length;s.cnt[a.id]=n+1;
+  return v[n<L?n:(L>3?L-3+((n-L)%3):n%L)]}
+/* 자리를 옮길 때 */
+const MOVE={
+ cabin:["선실로 돌아온다.","선실이다. 발전기는 제자리에 있다.","돌아온다. 침상의 이불은 둔 그대로다."],
+ hall:["통로로 나간다.","통로다. 비상등 사이의 어둠을 건넌다.","다시 통로다."],
+ mess:["식당으로 들어간다.","식당이다. 의자는 아홉 개다."],
+ cargo:["화물칸으로 간다. 공기가 축축해진다.","화물칸이다. 고정 띠가 삐걱거린다."],
+ lab:["실험실로 들어간다. 소독약 냄새가 난다.","실험실이다."],
+ port:["관측창 앞에 선다.","다시 창 앞이다."],
+ cryo:["동면실로 들어간다. 숨이 하얗다.","동면실이다. 배관이 낮게 운다."]
+};
+/* 일을 마친 뒤 드는 생각 */
+const THINK={
+ term:"기록이 없다는 것도 기록이다. 그렇게 생각하기로 한다.",
+ body:"아픈 곳을 세는 것으로 살아 있음을 확인한다. 좋은 방법은 아니다.",
+ locker:"덧옷에서 세제 냄새가 난다. 지구의 냄새다.",
+ floor:"누군가의 필기구는 주머니에 넣는다. 돌려줄 사람이 깨어날 것이다.",
+ pod:"기억에 없는 한 번. 누가 열었고, 왜 다시 닫았을까.",
+ window:"창을 열어 둔다. 보이지 않는 것을 보이지 않는다고 확인하는 것도 관측이다.",
+ door:"문을 두드려 볼까 하다가 그만둔다. 대답이 있으면 곤란하다.",
+ drawer:"사진을 서랍에 도로 넣는다. 엎어서 넣는다.",
+ h_lockers:"점검표의 서명은 조종사의 것이다. 출발 전날 날짜다.",
+ h_cryo:"여덟 명이 자고 있다. 부럽다는 생각이 든다. 그 생각을 지운다.",
+ h_leak:"손을 바지에 닦는다. 닦고 나서야 닦지 말았어야 했다고 생각한다.",
+ m_count:"혼자 먹기에는 많고, 아홉이 먹기에는 모자란 양이다.",
+ c_boxes:"조사 장비는 더 안쪽에 있다. 격벽에서 가까운 쪽이다. 오늘은 가지 않는다.",
+ l_scope:"아름답다고 생각한다. 그렇게 생각한 것을 기록하지는 않는다.",
+ l_culture:"빛을 준 쪽만 자랐다. 나는 이것에게 먹이를 준 셈이다.",
+ l_air:"숨을 참아 본다. 의미 없는 일이다. 며칠째 마시고 있다.",
+ l_tidy:"정리된 실험실은 문제가 없는 실험실처럼 보인다.",
+ l_cam:"화면 속의 배는 생각보다 작다. 저 안에 내가 있다.",
+ p_look:"식물은 해를 향해 눕는다. 이 배는 해가 아니다.",
+ p_sketch:"직선은 누군가 그은 것이다. 생물학자가 아니어도 안다.",
+ p_dust:"창 바깥에 쌓였다는 것은 이쪽으로 날아온다는 뜻이다.",
+ y_plates:"명판의 글자를 손끝으로 읽는다. 사람을 이렇게 한 줄로 줄여도 되는지 모르겠다.",
+ y_manual:"손글씨의 주인은 이 방에 누워 있다.",
+ y_food:"숫자는 누구를 깨우지 말라고 말한다. 숫자의 말을 듣지 않기로 한다."
+};
+const PODS=[
+ {no:"01",f:"생체모방공학",c:"나이지리아",r:"설계 도면 없이 수리한 사례 다수. 보고서 제출 지연 상습.",rel:"훈련 동기다. 서로 말을 놓는 유일한 사이."},
+ {no:"02",f:"화학생태학",c:"브라질",r:"후각 역치 측정 결과 상위 0.1%. 본인 요청으로 향료 반입 금지.",rel:"내 논문을 인용하며 지원한 후배 연구자."},
+ {no:"03",f:"시간생물학",c:"노르웨이",r:"극야 기지 3회 월동. 동면 프로토콜 설계 책임자.",rel:"공적으로만 대한 사이. 내 동면 기록을 관리했다."},
+ {no:"04",f:"우주고고학",c:"튀르키예",r:"선발 위원회 반대 2표. 사유: 본 임무의 조사 대상에 유적 없음.",rel:"내가 추천서를 써서 합류시킨 사람."},
+ {no:"05",f:"생물음향학",c:"인도",r:"개인 녹음 장비 14kg 반입 승인. 승인자 서명 불명확.",rel:"거의 대화해 본 적이 없다."},
+ {no:"06",f:"균학",c:"폴란드",r:"수석 과학자 후보 최종 2인. 탈락.",rel:"같은 자리를 놓고 경쟁했던 상대."},
+ {no:"07",f:"극한환경 심리학",c:"칠레",r:"전 대원 심리 평가서 작성자. 본인 평가서는 열람 제한.",rel:"출발 전 나를 면담하고 적합 판정을 내린 사람."},
+ {no:"08",f:"궤도역학",c:"카자흐스탄",r:"진입 궤도 최종 승인자.",rel:"추락에 책임이 있을지도 모르는 사람. 본인도 안다."}
+];
+
+/* ───────── 작은 도구 ───────── */
+function mood(k,n){s.mood[k]=Math.max(0,s.mood[k]+n);if(n>0)s.last=k}
+function topMood(keys){const m=s.mood,best=Math.max(...keys.map(k=>m[k]));if(keys.includes(s.last)&&m[s.last]===best)return s.last;return keys.find(k=>m[k]===best)}
+function note(t){s.notes.push(t)}
+function rec(k){s.rec[k]=true}
+function busy(){return !!(s.job||s.spin)}
+function isNight(){return s.day>=4&&s.clock>=DAY*.6}
+function slow(){return 1+(s.warm<=3?.5:0)+(s.hunger<=2?.5:0)+(s.dim?.3:0)+(s.day>=2&&s.oxy<=3?.5:0)}
+function leak(){return 9*(s.seen.battery?1.5:1)*(s.dim?1.5:1)}
+function cap(){return 30+(s.seen.battery?10:0)+(s.done.h_reroute?15:0)}
+function rolling(){return s.streak>=6&&Date.now()-s.lastCrank<2600}
+function hist(c,t){if(c==="act"){const l=s.hist[s.hist.length-1];if(l&&l.c==="act"&&l.t===t){l.n=(l.n||1)+1;return}}s.hist.push({c:c,t:t});if(s.hist.length>4000)s.hist.shift()}
+function el(tag,cls,text){const e=document.createElement(tag);if(cls)e.className=cls;if(text!=null)e.textContent=text;return e}
+
+/* ───────── 나레이션과 주변 ───────── */
+function drawEnv(anim){
+  $("envName").textContent=s.env.name;const E=$("env");E.innerHTML="";
+  s.env.lines.forEach(t=>{const p=el("p","",t);if(!anim)p.style.animation="none";E.appendChild(p)});
+}
+function bgKey(k){return k==="gen"&&s.seen.worn?"genWorn":k}
+function bgLines(k){const b=BG[bgKey(k)],l=b.l.slice();BGX.forEach(x=>{if(x.k===k&&x.c())l.push(x.t)});return l}
+function setEnv(k){s.env={k:k,name:BG[bgKey(k)].n,lines:bgLines(k)};drawEnv(true);markLook()}
+function showBg(k){if(s.seen["bg_"+k]){setEnv(k);return}s.seen["bg_"+k]=true;
+  const l=bgLines(k);l.forEach((t,i)=>queue.push({t:t,c:"bg",g:i===0,d:900,k:k}));if(!timer)pump()}
+function putEnv(text,gap,key){
+  if(gap){s.env={k:key,name:BG[bgKey(key)].n,lines:[]};$("env").innerHTML="";$("envName").textContent=s.env.name;markLook()}
+  hist("bg",text);s.env.lines.push(text);$("env").appendChild(el("p","",text));
+}
+function markLook(){const bs=$("look").querySelectorAll("button");bs.forEach(b=>b.classList.toggle("on",b.dataset.k===s.env.k))}
+function put(text,cls,gap,key){
+  if(cls==="bg")return putEnv(text,gap,key);
+  s.quiet=0;hist(cls||"n",text);s.log.unshift({t:text,c:cls||"",g:!!gap});if(s.log.length>50)s.log.length=50;
+  const p=el("p",(cls||"")+(gap?" gap":""),text),L=$("log");L.insertBefore(p,L.firstChild);while(L.children.length>50)L.removeChild(L.lastChild);
+}
+function say(lines,cls,delay,after){
+  lines.forEach((l,i)=>{let c=cls,t=l;if(Array.isArray(l)){c="term";t=l[1]}queue.push({t:t,c:c,g:i===0,d:delay||850})});
+  if(after)queue.push({fn:after});if(!timer)pump();
+}
+function pump(){timer=null;if(!queue.length)return;const q=queue.shift();if(q.fn){q.fn();return pump()}
+  put(q.t,q.c,q.g,q.k);if(queue.length)timer=setTimeout(pump,queue[0].fn?250:(queue[0].d||850))}
+function flush(){if(timer){clearTimeout(timer);timer=null}while(queue.length){const q=queue.shift();if(q.fn)q.fn();else put(q.t,q.c,q.g,q.k)}}
+$("log").addEventListener("click",flush);
+function maybeAside(ch){
+  if(!s.light)return;if(s.mood.anx>=5||s.mood.obs>=4)ch/=2;if(Math.random()>ch)return;
+  const ok=[];ASIDE.forEach((x,i)=>{if(x.d<=s.day&&!s.told[i]&&(!x.loc||x.loc===s.loc)&&(!x.c||x.c()))ok.push(i)});if(!ok.length)return;
+  const near=ok.filter(i=>ASIDE[i].loc||ASIDE[i].c||ASIDE[i].d===s.day),pool=near.length&&Math.random()<.7?near:ok,i=pool[Math.floor(Math.random()*pool.length)];
+  s.told[i]=true;say([ASIDE[i].t],"aside",900);
+}
+
+/* ───────── 행동 목록 ───────── */
+/* g: 살핀다(한 번) / 한다(되풀이) / 그 밖에. d: 걸리는 초. cost: 전력. from: 열리는 날 */
+const ACTS=[
+ /* 1일차 선실 */
+ {id:"term",loc:"cabin",from:1,g:"살핀다",label:"단말을 켠다",d:12,bg:"term",lines:["화면이 한 줄씩 살아난다.",["t","진입 궤도 이탈. 고도 상실. 기록 종료."],"착륙이 아니다. 추락이다. 그 뒤의 기록은 없다."]},
+ {id:"body",loc:"cabin",from:1,g:"살핀다",label:"몸 상태를 확인한다",d:6,lines:["손가락을 하나씩 접어 본다. 저림이 남아 있다.","숨을 깊이 쉬면 갈비뼈 한 곳이 아프다. 부러지지는 않았다."],fx(){mood("calm",1)}},
+ {id:"locker",loc:"cabin",from:1,g:"살핀다",label:"사물함을 연다",d:8,lines:["내 번호가 적힌 사물함이다.","작업복, 방한 덧옷, 봉인된 식량 세 포.","덧옷을 입는다. 떨림이 멎는다."],fx(){s.food+=3;s.warm=clamp(s.warm+3,0,10)}},
+ {id:"floor",loc:"cabin",from:1,g:"살핀다",label:"바닥을 뒤진다",d:15,lines:["기울어진 쪽 구석에 물건이 몰려 있다.","깨진 컵, 누군가의 필기구, 손전등.","손전등은 켜진다."],fx(){s.seen.torch=true}},
+ {id:"pod",loc:"cabin",from:1,g:"살핀다",label:"동면 장치를 살핀다",d:10,bg:"pod",lines:["표시창을 누르면 기록이 뜬다.",["t","개방 1 · 날짜 없음"],["t","개방 2 · 오늘"],"한 번은 기억에 없다."],fx(){mood("anx",1)}},
+ {id:"window",loc:"cabin",from:1,g:"살핀다",label:"창 덮개를 연다",d:8,lines:["덮개는 손으로 밀어야 열린다.","밖은 검다. 유리에 내 얼굴이 비친다.","그 너머는 보이지 않는다."]},
+ {id:"door",loc:"cabin",from:1,g:"살핀다",label:"문을 확인한다",d:6,need:()=>s.day===1,lines:["문은 잠겨 있지 않다. 전력이 없을 뿐이다.","귀를 댄다. 문 너머에서는 아무 소리도 나지 않는다."]},
+ {id:"locker2",loc:"cabin",from:1,g:"살핀다",label:"사물함 안쪽을 비춘다",d:6,need:()=>s.seen.torch&&s.done.locker,lines:["손전등을 사물함 안쪽으로 넣는다.","맨 뒤에 테이프로 붙인 봉투가 있다. 내 글씨가 아니다.","안에는 식량 한 포와 쪽지. 쪽지에는 숫자 하나만 적혀 있다. 2."],fx(){s.food++;mood("cur",1);note("사물함 안쪽에서 봉투 발견. 식량 1포와 쪽지. 쪽지에는 숫자 2. 내 글씨가 아니다.")}},
+ {id:"drawer",loc:"cabin",from:2,g:"살핀다",label:"개인 서랍을 연다",d:8,lines:["조사 계획서 인쇄본, 표본 라벨 묶음, 출발 전날의 단체 사진.","아홉 명이 서 있다. 모두 웃고 있다."],fx(){mood("anx",-1)}},
+ /* 선실에서 되풀이 */
+ {id:"rest",loc:"cabin",from:1,g:"그 밖에",label:"눈을 붙인다",d:20,repeat:true,lines:["벽에 등을 대고 눈을 감는다.","발전기가 식는 소리. 그보다 먼 곳에서 나는 소리."],fx(){mood("anx",-1);if(s.done.locker)s.warm=clamp(s.warm+1.5,0,10)}},
+ {id:"warm",loc:"cabin",from:1,g:"그 밖에",label:"발전기에 손을 녹인다",d:6,repeat:true,lines:["발전기 몸체에 두 손을 댄다. 돌린 만큼 따뜻하다.","손가락이 다시 굽혀진다."],fx(){s.warm=clamp(s.warm+2.5,0,10)}},
+ {id:"eat",loc:"*",from:1,g:"그 밖에",label:"식량을 먹는다",d:8,repeat:true,need:()=>s.food>0,lines:["포장을 뜯는다. 맛은 없다.","씹는 동안에는 다른 생각이 나지 않는다."],fx(){s.food--;s.hunger=clamp(s.hunger+5,0,10);s.warm=clamp(s.warm+1,0,10);s.daily.ate=true}},
+ /* 2일차 통로 */
+ {id:"h_lockers",loc:"hall",from:2,g:"살핀다",label:"비품함을 뒤진다",d:12,bg:"lockers",lines:["비품함 여섯 개 중 넷이 열린다.","비상식량 네 포, 정제 필터 넷, 여분 전지, 손전등.","전지는 배전반에 꽂아 둔다."],fx(){s.food+=4;s.filters+=4;s.power=Math.min(cap(),s.power+4);s.seen.torch=true}},
+ {id:"h_map",loc:"hall",from:2,g:"살핀다",label:"배치도를 본다",d:6,lines:["벽에 구역 배치도가 붙어 있다.","선실, 식당, 실험실, 화물칸, 관측창, 동면실, 조종실, 기관실.","기관실 쪽 통로는 천장이 내려앉아 있다. 실험실 문은 쏟아진 장비에 막혀 있다. 하루는 걸릴 일이다."],fx(){mood("calm",1)}},
+ {id:"h_cockpit",loc:"hall",from:2,g:"살핀다",label:"조종실을 들여다본다",d:10,bg:"cockpit",need:()=>s.seen.torch,lines:["문이 반쯤 찌그러져 있다. 틈으로 손전등을 비춘다.","왼쪽 좌석에 사람이 앉아 있다. 고개가 앞으로 숙여져 있다. 움직이지 않는다.","부르지 않는다. 대답이 없을 것을 안다.","오른쪽 좌석은 비어 있다. 안전띠는 끊어진 것이 아니다. 풀려 있다.","앞유리 너머는 흙이다. 옆 비상구가 안쪽에서 열려 있다."],fx(){rec("cockpit");mood("anx",1)}},
+ {id:"h_cryo",loc:"hall",from:2,g:"살핀다",label:"동면실 앞에 선다",d:6,bg:"cryodoor",lines:["문은 닫혀 있다. 작은 창으로 푸른 표시등이 보인다.","여덟 개. 모두 켜져 있다."]},
+ {id:"h_leak",loc:"hall",from:2,g:"살핀다",label:"누수를 막는다",d:12,lines:["통로 천장의 이음매에서 물이 맺혀 떨어진다. 밀봉 테이프를 붙인다.","손에 묻은 물은 맑지 않다."],fx(){s.contam=Math.max(0,s.contam-1);s.seen.leak=true}},
+ {id:"h_sound",loc:"hall",from:2,g:"살핀다",label:"소리를 따라간다",d:8,need:()=>!s.locs.includes("cargo")&&!s.choice.f2,lines:["통로 끝에서 긁는 소리가 난다. 소리 쪽으로 걷는다.","화물칸이다."],fx(){s.locs.push("cargo");go("cargo")}},
+ {id:"purify",loc:"hall",from:2,g:"한다",label:"정제기를 돌린다",d:10,repeat:true,cost:2,bg:"purifier",ok:()=>s.filters>0,why:"필터가 없다.",lines:["필터를 끼우고 정제기를 돌린다. 덜컹거리다 고르게 돈다.","공기가 조금 가벼워진다."],fx(){s.filters--;s.oxy=clamp(s.oxy+4,0,20)}},
+ {id:"h_reroute",loc:"hall",from:5,g:"한다",label:"조명 회로를 돌린다",d:10,lines:["통로 조명의 회로를 끊어 배전반 쪽으로 잇는다.","통로가 다시 어두워진다. 축전 용량이 늘었다."],fx(){s.approach=Math.max(0,s.approach-1)}},
+ {id:"h_open",loc:"hall",from:5,g:"한다",label:"동면실 문을 연다",d:6,cost:40,why:"전력 40이 필요하다.",lines:["패널에 손을 댄다. 문이 전력 40을 먹는다.","서리가 갈라지는 소리. 문이 열린다."],fx(){s.locs.push("cryo");go("cryo")}},
+ /* 2일차 식당 */
+ {id:"m_count",loc:"mess",from:2,g:"살핀다",label:"찬장을 센다",d:12,lines:["찬장에 식량 상자가 층층이 쌓여 있다. 세어 본다.","서른 포를 꺼내 온다. 나머지는 상자째 둔다."],fx(){s.food+=30;s.seen.stock=true}},
+ {id:"m_list",loc:"mess",from:2,g:"살핀다",label:"물자 목록을 적는다",d:10,lines:["식량, 필터, 전지. 숫자로 적는다.","숫자로 적으면 줄어드는 속도가 보인다."],fx(){mood("calm",1);s.seen.list=true}},
+ /* 화물칸 */
+ {id:"c_boxes",loc:"cargo",from:2,g:"살핀다",label:"화물 상자를 연다",d:15,lines:["고정 띠를 풀고 가까운 상자를 연다.","필터 묶음과 보존식. 조사 장비는 더 안쪽이다."],fx(){s.filters+=3;s.food+=6}},
+ /* 3일차 실험실 */
+ {id:"l_analyze",loc:"lab",from:3,g:"한다",label:"표본을 분석한다",d:30,repeat:true,mach:true,cost:3,bg:"analyzer",need:()=>s.samples>0,ok:()=>s.samples>s.analyzed,why:"분석하지 않은 표본이 없다.",lines:["표본을 투입구에 넣는다. 분석기가 낮게 돈다."]},
+ {id:"l_filter",loc:"lab",from:3,g:"살핀다",label:"환기 필터를 꺼낸다",d:8,need:()=>s.samples===0,lines:["환기 필터를 꺼낸다. 안쪽에 엷은 얼룩이 있다.","어제는 없던 것이다. 긁어서 용기에 담는다."],fx(){s.samples++;mood("anx",1)}},
+ {id:"l_scope",loc:"lab",from:3,g:"한다",label:"현미경으로 본다",d:12,daily:true,need:()=>s.samples>0,lines:["섬유가 한 방향으로 뻗는다. 초점을 맞추는 동안에도 뻗는다.","조명을 끄면 멈춘다."],fx(){s.data++;mood("cur",1)}},
+ {id:"l_culture",loc:"lab",from:3,g:"살핀다",label:"배양을 시도한다",d:15,cost:2,need:()=>s.samples>0,lines:["조각을 떼어 배지 두 개에 올린다. 하나는 조명 아래, 하나는 어둠 속.","자란 것은 조명 아래 쪽뿐이다."],fx(){s.samples++}},
+ {id:"l_air",loc:"lab",from:3,g:"살핀다",label:"공기를 검사한다",d:20,lines:["포집기를 통로에 세워 둔다.","여과지에 고운 입자가 앉는다. 표본과 같은 것이다."],fx(){rec("air");mood("anx",1);s.seen.contam=true;note("선내 공기에서 부유 입자 검출. 표본과 구조가 같다.")}},
+ {id:"l_sterile",loc:"lab",from:3,g:"한다",label:"소독등을 켠다",d:12,daily:true,cost:2,lines:["소독등을 켠다. 자외선 아래에서 벽 한쪽에 엷은 줄이 드러난다.","무언가 지나간 자국이다."],fx(){s.contam=Math.max(0,s.contam-1)}},
+ {id:"l_tidy",loc:"lab",from:3,g:"살핀다",label:"장비를 정리한다",d:12,lines:["쏟아진 기구를 하나씩 제자리에 건다.","깨진 것은 세 개뿐이다."],fx(){mood("calm",1);s.seen.tidy=true}},
+ {id:"l_label",loc:"lab",from:3,g:"살핀다",label:"표본 라벨을 쓴다",d:5,need:()=>s.samples>0,lines:["라벨에 번호와 날짜를 쓴다.","이름을 쓰는 칸은 비워 둔다."],fx(){mood("calm",1)}},
+ {id:"l_self",loc:"lab",from:3,g:"살핀다",label:"내 피부를 검사한다",d:10,need:()=>s.mood.anx>=3,lines:["손등을 긁어 슬라이드에 올린다. 피부 세포뿐이다.","한 번 더 본다. 피부 세포뿐이다."],fx(){mood("anx",-1)}},
+ {id:"l_cam",loc:"lab",from:4,g:"살핀다",label:"카메라를 고친다",d:20,cost:4,bg:"camera",lines:["접속 단자를 닦고 다시 꽂는다.","화면에 선체 바깥의 한 면이 뜬다. 찢어진 외판, 길게 끌린 자국, 그 끝의 배."],fx(){s.seen.cam=true}},
+ {id:"l_trail",loc:"lab",from:4,g:"살핀다",label:"추락 흔적을 살핀다",d:10,need:()=>s.seen.cam,lines:["화면을 확대한다. 끌린 자국은 길고 곧다.","떨어진 것치고는 너무 곧다.","자국 옆으로 가는 줄이 하나 더 있다. 발자국이다. 한 사람. 배에서 멀어지는 방향이다. 북동쪽 능선을 향한다."],fx(){rec("trail");rec("footprints");note("착지 흔적이 지나치게 곧다. 추락보다 유도된 착륙에 가깝다. 근거는 화면 한 장뿐이다. 조종실 비상구에서 북동쪽 능선으로 이어지는 발자국 한 줄. 돌아온 흔적은 없다.")}},
+ /* 4일차 관측창 */
+ {id:"p_look",loc:"port",from:4,g:"살핀다",label:"밖을 본다",d:8,lines:["군락은 바람과 상관없이 한 방향으로 누워 있다.","이 배 쪽이다."],fx(){mood("cur",1)}},
+ {id:"p_angle",loc:"port",from:4,g:"살핀다",label:"군락의 각도를 잰다",d:15,lines:["간격을 두고 각도를 잰다.","낮 동안 군락은 2도 더 이쪽으로 누웠다."],fx(){s.data++}},
+ {id:"p_sketch",loc:"port",from:4,g:"살핀다",label:"지형을 그린다",d:15,lines:["능선의 순서와 높이를 종이에 옮긴다.","북동쪽 능선 하나만 선이 곧다. 자연이 만든 선이 아니다."],fx(){rec("ridge");note("북동쪽 능선 하나가 직선이다. 지형도 초안에 표시.")}},
+ {id:"p_dust",loc:"port",from:4,g:"살핀다",label:"창의 가루를 채취한다",d:12,lines:["정비 구멍으로 채취봉을 내민다.","유리에 앉은 것은 재가 아니다. 가루다. 실험실의 표본과 구조가 같다."],fx(){s.samples++}},
+ {id:"p_ear",loc:"port",from:4,g:"살핀다",label:"선체에 귀를 댄다",d:10,lines:["차가운 벽에 귀를 붙인다.","바람 소리. 바람이 멎은 뒤에도 나는 소리."],fx(){rec("nightsound");note("선체 바깥에서 바람과 무관한 소리. 간격이 일정하다.")}},
+ {id:"p_lamps",loc:"port",from:4,g:"살핀다",label:"선내등 배치를 바꾼다",d:12,lines:["창 쪽 등을 끄고 안쪽 등만 남긴다.","밖으로 새는 빛이 줄어든다."],fx(){s.seen.lamps=true}},
+ /* 5일차 동면실 */
+ {id:"y_plates",loc:"cryo",from:5,g:"살핀다",label:"명판을 읽는다",d:8,bg:"plate",lines:["덮개의 서리를 손으로 닦는다. 얼굴은 보이지 않는다.","명판만 읽힌다. 번호, 전공, 국적, 기록 한 줄."]},
+ {id:"y_temp",loc:"cryo",from:5,g:"살핀다",label:"온도를 점검한다",d:12,lines:["계기는 영하를 가리킨다. 여덟 장치의 온도는 같아야 한다.","같지 않다. 차이는 0.3도 안쪽이다."],fx(){mood("calm",1)}},
+ {id:"y_manual",loc:"cryo",from:5,g:"살핀다",label:"각성 절차서를 읽는다",d:15,lines:["절차는 서른두 단계다.","열아홉째 단계 옆에 손글씨가 덧붙어 있다. 서두르지 말 것."],fx(){rec("manual")}},
+ {id:"y_med",loc:"cryo",from:5,g:"살핀다",label:"의료 물품을 챙긴다",d:12,lines:["담요, 수액, 구토 봉투.","깨어난 사람은 처음 한 시간 동안 말을 하지 못한다."],fx(){rec("med")}},
+ {id:"y_food",loc:"cryo",from:5,g:"살핀다",label:"식량을 다시 계산한다",d:8,lines:["한 명이 늘면 40일분은 20일분이 된다.","두 명이 늘면 13일분이다."],fx(){mood("anx",1)}},
+ {id:"y_stand",loc:"cryo",from:5,g:"살핀다",label:"표시등 앞에 서 있는다",d:8,lines:["여덟 개의 불빛. 숨소리는 들리지 않는다.","장치가 대신 숨을 쉰다."],fx(){mood(topMood(["calm","cur","anx","obs"]),1)}}
+];
+/* 쓸모없는 행동: 값이 변하지 않는다 */
+const IDLE={
+ mess:{label:"과자를 먹는다",t:"찬장 구석에 과자 봉지가 있다. 반입 금지 품목이다. 누구 것인지 알 것 같다. 먹는다."},
+ lab:{label:"볼펜을 돌린다",t:"볼펜을 돌린다. 세 번에 한 번은 떨어뜨린다. 떨어진 볼펜은 늘 같은 구석으로 굴러간다."},
+ port:{label:"창을 닦는다",t:"소매로 창을 닦는다. 안쪽만 닦인다."},
+ cryo:{label:"서리에 선을 긋는다",t:"덮개의 서리에 손가락으로 선을 긋는다. 금방 다시 언다."}
+};
+
+/* ───────── 분기 ───────── */
+const FORKS={
+ f1:{title:"배전반",btn:"배전반을 연다",bg:"board",cost:10,cancel:"덮개를 닫는다",
+  intro:["배전반에 불이 세 개 들어온다. 살아 있는 회로는 셋뿐이다.","지금 전력으로는 하나만 돌릴 수 있다."],
+  opts:{
+   life:{label:"생명유지 장치에 보낸다",lines:["환기구에서 미지근한 바람이 나온다.","숨이 더는 하얗지 않다.","창밖은 여전히 검다."],fx(){mood("calm",1)},log:"첫 전력은 생명유지 장치에 썼다. 살아 있어야 조사도 한다. 순서가 맞다."},
+   lamp:{label:"외부 조명에 보낸다",lines:["선체 밖으로 흰 빛이 뻗는다.","잿빛 땅, 낮은 능선, 한쪽으로 누운 군락.","빛의 가장자리에서 무언가 한 번 움직였다가 멈춘다."],fx(){mood("cur",1);s.approach+=2},log:"첫 전력으로 밖을 봤다. 식생으로 보이는 군락 확인. 빛의 경계에서 움직임 1회. 바람일 수 있다. 바람이라고 적어 둔다."},
+   comm:{label:"통신 장치에 보낸다",lines:["구조 신호가 나간다.","응답은 없다. 잡음뿐이다.","오래 듣고 있으면 같은 간격이 되풀이된다."],fx(){mood("anx",1);rec("noise")},log:"구조 신호 송신. 응답 없음. 잡음에 주기성이 있다. 장비 고장일 가능성이 높다."}}},
+ f2:{title:"벽면의 막",bg:"cargo",
+  intro:["격벽 너머에서 긁는 소리가 난다. 일정한 간격이다.","손전등을 비춘다. 벽면에 얇은 막이 덮여 있다. 반투명하고, 젖어 있고, 빛이 닿은 자리 쪽으로 천천히 번져 온다.","공기에서 젖은 흙냄새가 난다."],
+  opts:{
+   scrape:{label:"막을 긁어내 용기에 담는다",lines:["칼끝이 닿자 막이 수축한다.","긁어낸 조각은 용기 안에서도 한동안 움직인다.","긁는 소리가 멎는다."],fx(){s.samples++;s.approach++},log:"화물칸 격벽에서 막 형태의 생물체 채집. 표본 1호. 자극에 수축 반응. 이것이 이미 선내에 들어와 있다는 사실은 따로 생각한다."},
+   watch:{label:"손전등을 끄고 지켜본다",lines:["어둠 속에서 막은 움직이지 않는다.","한참 뒤 손전등을 다른 벽에 켠다.","막은 정확히 그쪽으로 방향을 튼다."],fx(){mood("cur",1);rec("photo")},log:"화물칸 격벽에 막 형태의 생물체. 채집하지 않고 관찰. 빛을 향해 방향을 바꾼다. 주광성으로 보이나 속도가 식물의 것이 아니다."},
+   close:{label:"격벽을 닫고 물러난다",lines:["격벽이 무겁게 닫힌다.","긁는 소리는 닫힌 뒤에도 들린다.","간격이 변하지 않는다."],fx(){mood("anx",1);s.locs=s.locs.filter(l=>l!=="cargo");go("hall")},log:"화물칸에 무언가 있다. 격벽을 닫았다. 조사는 안전을 확보한 뒤에 한다. 소리는 계속 난다."}}},
+ f3:{title:"분석 방법",btn:"분석 방법을 정한다",cancel:"나중에 정한다",
+  intro:["표본은 용기 안에서 가만히 있다. 분석기의 대기등이 켜질 때마다 그쪽 벽으로 아주 조금 붙는다.","더 알아내려면 방법을 정해야 한다."],
+  opts:{
+   shock:{label:"전류를 흘려 반응을 본다",lines:["전극을 넣는다. 표본이 전극을 감싼다.","십 분 뒤 표본은 두 배가 되어 있다.","용기 뚜껑 안쪽에 고운 가루가 묻어 있다."],fx(){s.data+=3;mood("obs",1);s.approach++;s.contam+=2;rec("spore")},log:"전류 자극 시 급속 증식. 10분에 약 2배. 용기 내벽에 미세 입자, 포자로 추정. 용기는 밀봉 상태였다. 밀봉 상태였다고 생각한다."},
+   observe:{label:"건드리지 않고 기록만 한다",lines:["십 분마다 사진을 찍는다.","표본은 대기등 쪽으로 4밀리미터 움직였다. 그뿐이다.","그뿐이라는 것이 기록이다."],fx(){s.data++;mood("calm",1)},log:"비파괴 관찰. 광원 방향으로 4mm 이동. 느리다. 그러나 방향이 틀린 적은 없다."},
+   burn:{label:"표본을 소각한다",lines:["소각기 문을 닫는다. 짧은 열기.","용기는 비었다. 실험실은 조금 전과 같다.","필터의 얼룩만 빼면."],fx(){s.samples=0;s.analyzed=0;mood("anx",-1);mood("cur",-1)},log:"표본 폐기. 선내 반입은 일렀다. 환기 필터의 얼룩은 닦아도 다음 점검 때 다시 있다."}}},
+ f4:{title:"빛",btn:"빛을 어떻게 할지 정한다",cancel:"아직 정하지 않는다",
+  intro:["그것들은 빛이 닿는 경계에서 기다린다.","선내등의 밝기는 내 손에 있다."],
+  pre(){return s.rec.photo?["화물칸의 막도 빛을 따라 움직였다. 같은 것일 수 있다."]:[]},
+  opts:{
+   dim:{label:"빛을 줄인다",lines:["선내등을 최소로 낮춘다. 춥다.","형체들이 하나씩 경계에서 떨어져 어둠으로 돌아간다.","마지막 하나는 오래 남는다."],fx(){s.approach=Math.max(0,s.approach-2);mood("calm",1);s.dim=true;s.seen.cap=true},log:"조명을 낮추자 개체들이 물러났다. 빛에 끌린다는 가설을 세운다. 가설이 맞다면 발전기는 신호등이다. 그러나 전력 없이는 동면실을 열 수 없다."},
+   keep:{label:"그대로 두고 기록한다",lines:["밝기를 바꾸지 않는다. 형체를 센다. 열하나.","삼십 분 뒤 다시 센다. 열넷.","사람보다 작지 않다."],fx(){s.data+=2;mood("cur",1);s.approach++;rec("count")},log:"개체 수 11에서 14로 증가. 체고 추정 1.5m 이상. 접근하지 않고 대기한다. 대기라는 단어가 맞는지 모르겠다. 무엇을 기다리는가."},
+   max:{label:"외부 조명을 최대로 켠다",lines:["흰 빛이 능선까지 닿는다. 형체들은 달아나지 않는다.","빛 속에서 처음으로 윤곽이 보인다. 서 있다.","빛이 닿은 능선 너머에서, 더 많은 것이 일어난다."],fx(){s.approach+=3;mood("anx",2);s.power=Math.max(0,s.power-5);rec("outline")},log:"조명을 최대로 올렸다. 쫓으려 했다. 잘못된 판단이었다. 개체들은 직립해 있었다. 직립 말고 다른 표현을 찾지 못했다."}}},
+ f5:{title:"고르기 전에",btn:"고르기 전에 할 일을 정한다",cancel:"아직 정하지 않는다",
+  intro:["누구를 깨울지 정하기 전에 할 수 있는 일이 있다.","남은 시간으로는 하나뿐이다."],
+  opts:{
+   inspect:{label:"장치의 외관을 점검한다",lines:["덮개와 배관을 하나씩 손으로 짚는다.","세 개의 장치 이음매에 결로가 맺혀 있다.","추락의 충격 때문인지, 원래 그런지는 알 수 없다."],fx(){mood("calm",1);markPods()},log:"장치 3기에서 이음매 결로 확인. 원인 불명. 판단 근거로 삼기에는 약하다. 그래도 기억해 둔다."},
+   files:{label:"인사 기록 전문을 읽는다",lines:["한 줄 요약 뒤의 기록이 열린다.","추천인, 평가서, 면담 기록.","내 이름이 여러 번 나온다."],fx(){mood("cur",1);s.seen.files=true},log:"인사 기록 열람. 나는 이들을 번호와 전공으로 알고 있었다. 기록에는 그 이상이 있다. 그들이 나에 대해 적은 것도 있다."},
+   direct:{label:"곧바로 고른다",lines:["오래 볼수록 고르기 어려워진다는 것을 안다.","표시등 앞에 선다."],fx(){mood("anx",-1)},log:"검토 없이 정했다. 검토할수록 나머지를 고르지 않는 이유가 필요해진다."}}}
+};
+function markPods(){
+  const p=s.done.y_temp?.8:.7,m=[];
+  s.pods.forEach((bad,i)=>{if(bad&&Math.random()<p)m.push(i)});
+  const clean=s.pods.map((b,i)=>i).filter(i=>!m.includes(i)).sort(()=>Math.random()-.5);
+  while(m.length<3&&clean.length){const i=clean.shift();if(!s.pods[i]||m.length<3)m.push(i)}
+  s.marks=m.sort(()=>Math.random()-.5).slice(0,3);
+}
+function forkReady(id){
+  if(s.choice[id])return false;
+  if(id==="f1")return s.loc==="cabin"&&s.seen.boardClick;
+  if(id==="f3")return s.loc==="lab"&&s.seen.firstAnalysis;
+  if(id==="f4")return s.seen.nightScene&&s.day===4;
+  if(id==="f5")return s.loc==="cryo"&&s.done.y_plates;
+  return false;
+}
+function openFork(id){
+  const f=FORKS[id];if(busy()||(f.cost&&s.power<f.cost))return;
+  s.idle=0;s.pick=false;s.phase="fork";s.fork=id;hist("act","◆ "+(f.btn||f.title));
+  if(f.bg&&id!=="f2")showBg(f.bg);
+  say(f.intro.concat(f.pre?f.pre():[]),"",1000);render();
+}
+function choose(k){
+  const id=s.fork,f=FORKS[id],o=f.opts[k];s.choice[id]=k;s.phase="play";s.fork=null;
+  if(f.cost)s.power-=f.cost;hist("act","◆ "+o.label);
+  if(id==="f5"){s.phase="night";say(o.lines.concat(["이제 고른다. 고르기 전에는 아무것도 움직이지 않는다."]),"",1200,()=>{s.phase="pick";s.pickSel=null;render()})}
+  else say(o.lines,"",1200);
+  o.fx();render();
+}
+
+/* ───────── 발전기 ───────── */
+function crank(btn){
+  if(cooling||busy())return;
+  if(s.turns>=10){s.pick=!s.pick;render();return}
+  cooling=true;const bar=btn.querySelector(".cool");
+  if(bar){bar.style.transition="none";bar.style.width="100%";requestAnimationFrame(()=>requestAnimationFrame(()=>{bar.style.transition="width 1.1s linear";bar.style.width="0"}))}
+  setTimeout(()=>{cooling=false;render()},1100);
+  doCrank();
+  if(s.turns===10)say(["손이 요령을 익혔다. 이제는 몇 바퀴를 돌릴지 정하고 돌릴 수 있다."]);
+  render();
+}
+function spin(n){if(busy()||s.phase!=="play")return;s.pick=false;s.idle=0;hist("act","발전기를 "+n+"바퀴 돌린다");s.spin={left:n,acc:.5};render()}
+function stopSpin(){if(!s.spin)return;s.spin=null;say(["손을 뗀다."]);render()}
+function doCrank(){
+  s.idle=0;const now=Date.now();s.streak=now-s.lastCrank<2600?s.streak+1:1;s.lastCrank=now;
+  const capped=s.day===5&&s.seen.cap;
+  if(s.streak===6&&!capped)say(["발전기가 탄력을 받는다. 한 바퀴에 들어오는 양이 늘었다.","멈추면 다시 무거워질 것이다."]);
+  s.power=Math.min(cap(),s.power+(s.streak>=6&&!capped?2:1));s.turns++;
+  if(s.power>=cap()){if(s.spin)s.spin.left=1;if(!s.daily.full){s.daily.full=true;say(["전력이 더는 들어가지 않는다. 축전 용량이 찼다."])}}s.warm=clamp(s.warm+.15,0,10);if(!s.spin)hist("act","발전기를 돌린다");
+  if(s.turns===1)say(["손잡이가 무겁다. 세 바퀴째에 낮은 울음이 시작된다."]);
+  else if(s.streak<6||s.turns%4===0)say([CRANK[(s.turns-2)%CRANK.length]]);
+  if(s.light)showBgOnce("gen");
+  if(!s.light&&s.power>=5){s.light=true;say(["천장의 비상등 하나가 켜진다. 붉다.","선실의 윤곽이 드러난다. 뒤집힌 의자, 내려앉은 먼지, 닫힌 문 하나."],"",1100);showBg("room")}
+  if(s.power>=10&&!s.seen.boardClick&&!s.choice.f1){s.seen.boardClick=true;say(["문 옆 배전반에서 딸깍 소리가 난다."])}
+  if(s.turns===30){s.seen.worn=true;say(["손잡이의 붉은 칠이 손 닿는 자리만 벗겨졌다. 하루도 지나지 않았다."]);setEnv("gen")}
+  if(s.turns===50){s.seen.tally=true;mood("cur",1);
+    say(["감아 놓은 테이프가 밀려 올라간다. 그 아래 쇠에 긁어 새긴 자국이 있다.","바를 정 자가 아홉. 그리고 네 획.","이 손잡이를 이만큼 돌린 사람이 전에 있었다."],"",1200);
+    note("발전기 손잡이의 테이프 아래에 긁어 새긴 횟수 표시. 마흔아홉. 누가 언제 새겼는지 모른다.")}
+  if(isNight()){s.approach+=s.dim?.04:.08;
+    if(!s.seen.nightCrank){s.seen.nightCrank=true;say(["발전기가 운다. 선내등이 한 단계 밝아진다.","창밖의 어둠에서 무언가 그만큼 가까워진다."],"",1200)}}
+}
+function showBgOnce(k){if(!s.seen["bg_"+k])showBg(k)}
+function dimmer(){if(busy())return;s.idle=0;s.dim=!s.dim;hist("act",s.dim?"비상등을 낮춘다":"비상등을 올린다");
+  say(s.dim?["비상등을 한 단계 낮춘다. 방이 좁아진다.","전력은 덜 샌다. 손끝은 덜 보인다."]:["비상등을 다시 올린다. 구석이 돌아온다."]);render()}
+function chair(){
+  if(busy()||s.seen.battery)return;s.idle=0;s.chair++;hist("act","의자를 세운다");
+  if(s.chair>=5){s.seen.battery=true;say(["의자 다리 밑에 무언가 끼어 있다. 그래서 자꾸 미끄러진 것이다.","축전지다. 손바닥만 하다. 아직 살아 있다.","배전반 옆 빈 자리에 끼운다. 의자는 이제 선다."],"",1100);render();return}
+  say([s.chair===1?"뒤집힌 의자를 바로 세운다. 기울어진 바닥에서 의자는 다시 미끄러진다. 다시 세운다.":s.chair===4?"의자가 또 미끄러진다. 한쪽 다리가 바닥에 닿지 않는다.":"의자를 세운다. 미끄러진다."],"aside")}
+function idleAct(){if(busy())return;const i=IDLE[s.loc];hist("act",i.label);say([i.t],"aside")}
+
+/* ───────── 일 ───────── */
+function actOf(id){return ACTS.find(a=>a.id===id)}
+function costOf(a){return a.id==="l_analyze"&&s.seen.tidy?2:(a.cost||0)}
+function startJob(a){
+  if(s.phase!=="play"||s.power<1)return;
+  if(a.mach){if(s.mach||s.power<costOf(a)||(a.ok&&!a.ok()))return}
+  else if(busy()||s.power<costOf(a)||(a.ok&&!a.ok()))return;
+  s.idle=0;s.pick=false;hist("act",a.label);if(a.bg)showBgOnce(a.bg);
+  s.power-=costOf(a);
+  const ls=linesFor(a);say([ls[0]]);
+  const j={id:a.id,t:0,dur:a.d*(a.mach?1:slow()),lines:ls};
+  if(a.mach)s.mach=j;else s.job=j;render();
+}
+function finishJob(){
+  if(s.job.id==="move"){const to=s.job.to;s.job=null;go(to);return}
+  const a=actOf(s.job.id),jl=s.job.lines||a.lines;s.job=null;s.seen.tut=true;
+  if(a.daily)s.daily[a.id]=true;else if(!a.repeat)s.done[a.id]=true;
+  let lines=jl.slice(1),fx=a.fx;
+  if(a.id==="rest"&&s.done.pod&&!s.seen.dream){s.seen.dream=true;
+    lines=["꿈을 꾼다. 덮개가 열린다. 누군가 내려다본다. 얼굴은 서리에 가려 있다.","덮개가 다시 닫힌다.","깬다. 꿈이었는지 모르겠다."];
+    fx=()=>{mood("anx",1);if(s.done.locker)s.warm=clamp(s.warm+1.5,0,10)};
+    note("잠깐 잠들었다. 동면 장치가 한 번 열렸다 닫히는 꿈. 기억일 가능성은 적지 않는다.")}
+  if(lines.length)say(lines,"",a.id==="rest"?1200:1000);
+  if(fx)fx();
+  if(THINK[a.id])say([THINK[a.id]],"aside",1100);else maybeAside(.5);render();
+}
+function finishMach(){
+  s.mach=null;s.analyzed++;s.data++;
+  if(s.loc!=="lab")say(["실험실 쪽에서 분석기가 멎는 소리가 난다."]);
+  if(!s.seen.firstAnalysis){s.seen.firstAnalysis=true;
+    say(["화면에 숫자가 한 줄씩 올라온다.","세포 구조가 있다. 핵에 해당하는 것은 없다. 대신 조직 전체에 가는 실 같은 것이 지나간다.","빛을 쬐면 반사하지 않는다. 흡수한다. 전극을 가까이 대면 조직이 그쪽으로 늘어난다."],"",1200)}
+  else say(["분석 결과가 올라온다. 앞의 것과 같은 구조다. 같은 개체일 수 있다."]);
+  render();
+}
+const TO={cabin:"선실로",hall:"통로로",mess:"식당으로",cargo:"화물칸으로",lab:"실험실로",port:"관측창으로",cryo:"동면실로"};
+const WALK=5;
+function exits(){return s.loc==="hall"?s.locs.filter(l=>l!=="hall"):(s.locs.includes("hall")?["hall"]:[])}
+function walk(loc){
+  if(busy()||s.phase!=="play"||!exits().includes(loc))return;
+  s.idle=0;s.pick=false;hist("act",TO[loc]+" 간다");
+  const mv=MOVE[loc];s.seen["mv_"+loc]=(s.seen["mv_"+loc]||0)+1;say([mv[(s.seen["mv_"+loc]-1)%mv.length]]);
+  s.job={id:"move",to:loc,t:0,dur:WALK*slow()};render();
+}
+function go(loc){
+  if(!s.locs.includes(loc))return;
+  if(loc!=="cabin")s.seen.left=true;else if(s.seen.left)s.seen.tut2=true;
+  s.loc=loc;s.pick=false;s.idle=0;const k=LOC[loc].bg;
+  if(loc==="cargo"&&!s.choice.f2){s.seen["bg_cargo"]=true;setEnv("cargo");openFork("f2");return}
+  if(!s.seen["bg_"+k])showBg(k);else setEnv(k);
+  render();
+}
+function endDay(early){
+  if(s.phase!=="play")return;
+  const cut=busy();s.job=null;s.spin=null;s.pick=false;s.phase="night";if(early)hist("act","일찍 눕는다");
+  if(s.day===4&&!s.seen.lamps)s.approach+=1;
+  const lines=early?["선실로 돌아와 불을 낮추고 침상에 눕는다."]:[cut?"하던 일을 내려놓는다. 몸이 더는 움직이지 않는다.":"몸이 더는 움직이지 않는다. 하루가 끝난다."];
+  lines.push("단말을 끌어당긴다. 적어 두어야 한다.");
+  say(lines,"",1300,()=>{s.journal.push({day:s.day,paras:journal()});s.hist.push({c:"journal",t:s.day});s.phase="journal";render()});render();
+}
+
+/* ───────── 날이 바뀐다 ───────── */
+const DAWN={
+ 2:()=>["선실 문이 열린다. 통로는 길고 낮다. 비상등이 다섯 걸음마다 하나씩 켜져 있고, 그 사이는 어둡다.","바닥에 얇게 물기가 있다. 선내 습도가 올라가 있다.","통로 끝에서 긁는 소리가 난다."],
+ 3:()=>["실험실 문을 막고 있던 장비를 치웠다. 문이 열린다.","실험실은 기울어진 채로 멀쩡하다. 고정된 장비는 제자리에 있고, 고정하지 않은 것은 전부 한쪽 벽에 쌓여 있다."],
+ 4:()=>["관측창의 덮개가 올라간다. 유리 바깥쪽에 재 같은 것이 얇게 앉아 있다.","낮의 행성은 잿빛이다. 낮은 능선이 겹쳐 있고, 그 사이를 납작한 군락이 메우고 있다. 하늘은 밝지만 해는 보이지 않는다.","움직이는 것은 없다. 낮에는."],
+ 5:()=>[s.choice.f2==="close"?"화물칸 앞을 지나간다. 격벽 너머의 긁는 소리가 오늘은 나지 않는다.":"화물칸 앞을 지나간다. 어제까지 손이 들어가던 외판의 균열에, 오늘은 손가락만 들어간다.",
+   "동면실 문은 전력 40을 먹고 열린다.","배전반의 계산은 간단하다. 한 사람을 깨우는 데 드는 전력이면 이 배는 엿새를 버틴다. 두 번이 한계다."]
+};
+function nextDay(){
+  s.day++;s.phase="play";s.clock=0;s.aP=0;s.aO=0;s.daily={};s.notes=[];s.job=null;s.spin=null;s.pick=false;s.idle=0;s.quiet=0;s.loc="cabin";s.dim=false;
+  s.power=Math.max(0,s.power-5);s.warm=Math.max(s.warm,s.done.locker?6:4);s.hunger=Math.max(0,s.hunger-2);
+  if(s.day>=3)s.oxy=Math.max(0,s.oxy-3);
+  if(s.day===2){s.locs.push("hall","mess")}if(s.day===3)s.locs.push("lab");if(s.day===4)s.locs.push("port");
+  $("log").innerHTML="";s.log=[];$("log").hidden=false;setEnv("room");
+  hist("act","— "+s.day+"일차 —");
+  try{localStorage.setItem(SAVE,JSON.stringify(s))}catch(e){}
+  say(DAWN[s.day](),"",1400);render();
+}
+
+/* ───────── 일지 ───────── */
+function journal(){
+  const d=s.day,p=[],c=s.choice;
+  if(d===1){
+    p.push("추락했다. 원인 불명. 선체는 약 12도 기울어 정지. 현재 깨어 있는 사람은 나 하나다. 동면실은 전력 부족으로 접근 불가.");
+    p.push("수동 발전기 가동. 비상 전력 확보. 전력은 돌리는 만큼만 있고, 돌리지 않으면 샌다.");
+    p.push(c.f1?FORKS.f1.opts[c.f1].log:"배전반의 회로 셋이 살아 있다. 오늘은 어디에도 전력을 보내지 못했다.");
+  }else if(d===2){
+    let a="선내 확인.";
+    if(s.done.h_cockpit)a+=" 조종실 진입 불가. 조종사 1명 사망 확인. 좌석에 앉은 채였다. 다른 1명은 소재 불명. 안전띠를 스스로 풀고 비상구로 나갔다.";
+    a+=s.done.h_cryo?" 동면실 표시등 8개 정상. 깨우려면 전력이 더 필요하다.":" 동면실은 아직 확인하지 못했다.";p.push(a);
+    p.push(s.seen.stock?"식량은 1인 기준 40일분. 산소는 정제기에 달렸다.":"식량 재고는 세지 못했다. 산소는 정제기에 달렸다.");
+    p.push(c.f2?FORKS.f2.opts[c.f2].log:"통로 끝에서 긁는 소리가 난다. 오늘은 가 보지 않았다.");
+  }else if(d===3){
+    p.push(s.seen.firstAnalysis?"실험실 가동. 표본 분석 개시. 세포성 조직, 핵 없음, 섬유상 연결 구조. 가시광 흡수율이 비정상적으로 높다. 광합성과는 다른 경로로 보인다.":"실험실 가동. 분석은 시작하지 못했다. 표본이 있어야 한다.");
+    if(c.f3)p.push(FORKS.f3.opts[c.f3].log);
+  }else if(d===4){
+    p.push("외부 관측 개시. 주간 활동 없음. 식생형 군락이 선체 방향으로 굴성을 보인다."+(s.seen.nightScene?" 야간에 이동성 개체 다수 출현. 선체 조명이 닿는 범위의 경계에 정지.":""));
+    if(c.f1==="lamp"&&s.seen.nightScene)p.push("첫날 밤 빛의 가장자리에서 움직인 것은 바람이 아니었다.");
+    p.push(c.f4?FORKS.f4.opts[c.f4].log:"조명을 어떻게 할지 정하지 못한 채 밤이 지났다. 그것들도 밤새 거기 있었다.");
+  }else{
+    p.push("동면실 진입. 장치 8기 모두 생명 징후 정상. 깨울 수 있는 인원은 2명. 전력 제약에 따른 결정이며, 선택 기준은 임무 수행 능력이다. 그렇게 적는다.");
+    if(c.f5)p.push(FORKS.f5.opts[c.f5].log);
+    const h=PODS[s.helper];p.push("첫 번째로 깨울 사람: "+h.no+" · "+h.f+".");
+  }
+  if(s.notes.length)p.push(s.notes.join(" "));
+  const b=[];if(s.hunger<=2)b.push("먹는 것을 잊었다. 내일은 잊지 않는다.");if(s.warm<=3)b.push("손이 아직 떨린다. 글씨가 비뚤다.");
+  if(d>=2&&s.oxy<=3)b.push("숨이 얕다. 정제기를 돌려야 한다.");if(b.length)p.push(b.join(" "));
+  const CL={
+   1:{calm:"내일은 선내를 확인한다.",cur:"조사하러 온 행성이다. 방식이 달라졌을 뿐이다.",anx:"발전기를 멈추면 조용하다. 너무 조용하다."},
+   2:{calm:"재고와 구역 목록을 만들었다. 목록이 있으면 견딜 수 있다.",cur:c.f2&&c.f2!=="close"?"이틀 만에 선내에서 현지 생물을 만났다. 운이 좋다고 써도 되는지 모르겠다.":"통로 끝의 소리가 무엇인지 궁금하다. 궁금해해도 되는 것인지는 모르겠다.",anx:"표시등은 여덟 개다. 몇 번을 세어도 여덟 개다. 왜 자꾸 세는지 모르겠다."},
+   3:{calm:"분류명은 아직 붙이지 않는다. 아는 것이 너무 적다.",cur:"빛을 먹는다고 적어야 할지 모르겠다. 일단 그렇게 적는다.",anx:"발전기를 돌리면, 이 근방에서 가장 밝은 것은 이 배다.",obs:"식사를 건너뛴 것을 지금 알았다."},
+   4:{calm:"관측한 것과 추정한 것을 나눠 적는다. 오늘 적은 것 중 사실은 절반이다.",cur:"평생 이것을 찾았다. 지금은 창 하나를 사이에 두고 있다.",anx:"혼자서는 안 된다. 내일 동면실을 연다.",obs:"밤새 화면 앞에 있었다. 그것들도 밤새 거기 있었다."}
+  };
+  if(d<5){const keys=Object.keys(CL[d]);p.push(CL[d][topMood(keys)])}
+  else{p.push("내일 한 사람을 깨운다. 깨우지 않는 사람들의 표시등도 계속 켜 둔다.");p.push("선체 외판의 균열이 어제보다 작다. 측정 오차로 기록한다.")}
+  return p;
+}
+function journalBox(j,extra){const b=el("div","journal");b.appendChild(el("h2","","조사 "+j.day+"일차"+(j.dead?" · 미완":"")+(extra||"")));j.paras.forEach(t=>b.appendChild(el("p","",t)));return b}
+
+/* ───────── 조력자 고르기 ───────── */
+function pickHelper(i){
+  s.helper=i;s.phase="night";s.pickSel=null;const h=PODS[i];hist("act","◆ "+h.no+" · "+h.f+"을(를) 깨운다");
+  say([h.no+"번 장치 앞에 선다. 명판에 손을 댄다. 차다.","내일 이 덮개를 연다.","나머지 일곱 개의 표시등은 그대로 푸르다."],"",1500,()=>{
+    s.journal.push({day:5,paras:journal()});s.hist.push({c:"journal",t:5});s.phase="end";
+    runs.unshift({helper:h.no+" · "+h.f+" · "+h.c,choice:Object.assign({},s.choice),journal:s.journal.slice(),approach:s.approach});
+    if(runs.length>12)runs.length=12;try{localStorage.setItem(RUNS,JSON.stringify(runs));localStorage.removeItem(SAVE)}catch(e){}
+    render()});
+  render();
+}
+
+/* ───────── 죽음: 0이 된 뒤 버틸 수 있는 시간(초) ───────── */
+const LIMIT={oxy:45,warm:75,hunger:120};
+const DZ={
+ oxy:["산소가 바닥났다. 숨을 쉬어도 들어오는 것이 없다. 통로의 정제기까지 가야 한다.","시야 가장자리가 어두워진다. 손끝이 저리다.","무릎이 꺾인다. 지금 가지 않으면 못 간다."],
+ warm:["떨림이 멎지 않는다. 몸이 열을 만들지 못한다. 발전기에 손을 대거나 걸칠 것을 찾아야 한다.","손가락이 굽혀지지 않는다. 생각이 느려진다.","떨림이 멎는다. 좋은 신호가 아니라는 것을 안다."],
+ hunger:["배 속이 비었다. 속이 쓰린 단계는 지났다. 지금 먹어야 한다.","일어설 때마다 눈앞이 하얘진다.","손이 떨려서 물건을 놓친다. 오래 버티지 못한다."]
+};
+const DEATH={
+ oxy:{name:"산소 부족",lines:["숨을 들이쉰다. 들어오는 것이 없다.","정제기까지 걸음을 센다. 세다가 잊는다.","바닥이 가까워진다. 비상등이 멀어진다."],log:"산소 농도 저하. 정제기를"},
+ warm:{name:"저체온",lines:["따뜻하다는 착각이 든다. 덧옷을 벗고 싶어진다.","벽에 기대앉는다. 잠깐만 눈을 감기로 한다.","발전기가 식는 소리가 멀어진다."],log:"체온 저하. 손이 말을 듣지 않는"},
+ hunger:{name:"탈진",lines:["일어서려다 벽을 짚는다. 벽이 멀다.","손이 포장을 뜯지 못한다.","앉는다. 앉은 채로, 더는 일어나지 않는다."],log:"먹는 것을 미뤘다. 내일은"}
+};
+function gaugeOf(k){return k==="oxy"?s.oxy:k==="warm"?s.warm:s.hunger}
+function danger(dt){
+  /* 0인 수치마다 시계가 돈다. 둘 이상이 0이면 1.5배로 빨리 돈다. 1 이상으로 올리면 시계가 되돌아간다. */
+  const keys=["warm","hunger"].concat(s.day>=2?["oxy"]:[]);
+  const zeros=keys.filter(k=>gaugeOf(k)<=0).length;
+  for(const k of keys){
+    const v=gaugeOf(k);
+    if(v<=0){
+      s.dz[k]=(s.dz[k]||0)+dt*(zeros>1?1.5:1);const st=s.dz[k]/LIMIT[k];
+      [0,.45,.8].forEach((th,i)=>{if(st>=th&&!s.dzs[k+i]){s.dzs[k+i]=true;say([DZ[k][i]])}});
+      if(s.dz[k]>=LIMIT[k]){die(k);return true}
+    }else if(v>=1&&s.dz[k]){s.dz[k]=0;[0,1,2].forEach(i=>{delete s.dzs[k+i]})}
+  }
+  return false;
+}
+function left(k){return s.dz[k]>0&&gaugeOf(k)<1?Math.max(0,Math.ceil(LIMIT[k]-s.dz[k])):0}
+function die(k){
+  const d=DEATH[k];s.job=null;s.spin=null;s.mach=null;s.pick=false;s.phase="dying";s.cause=k;hist("act","— 생존 실패 —");
+  say(d.lines,"",1700,()=>{
+    const p=[];if(s.notes.length)p.push(s.notes.join(" "));p.push(d.log);
+    s.journal.push({day:s.day,paras:p,dead:true});s.hist.push({c:"journal",t:s.day});s.phase="dead";
+    runs.unshift({helper:"생존 실패 · "+s.day+"일차 · "+d.name,choice:Object.assign({},s.choice),journal:s.journal.slice(),approach:s.approach});
+    if(runs.length>12)runs.length=12;try{localStorage.setItem(RUNS,JSON.stringify(runs))}catch(e){}
+    render()});
+  render();
+}
+function retryDay(){
+  let j=null;try{j=JSON.parse(localStorage.getItem(SAVE)||"null")}catch(e){}
+  if(!j||j.v!==2){restart();return}
+  if(timer){clearTimeout(timer);timer=null}queue=[];cooling=false;s=j;resume();say(DAWN[s.day](),"",1400);
+}
+function renderDead(){
+  const N=$("night"),d=DEATH[s.cause];N.hidden=false;
+  N.appendChild(journalBox(s.journal[s.journal.length-1]));
+  N.appendChild(el("p","hint","일지는 여기서 끊겨 있다. 여덟 개의 표시등은 계속 켜져 있다. 깨울 사람은 없다."));
+  N.appendChild(el("p","hint","생존 실패 · 조사 "+s.day+"일차 · "+d.name));
+  const r=el("div","row");let has=false;try{const j=JSON.parse(localStorage.getItem(SAVE)||"null");has=!!(j&&j.v===2&&j.day===s.day)}catch(e){}
+  if(has)r.appendChild(btn(s.day+"일차 아침부터 다시",retryDay,{cls:"wide"}));
+  r.appendChild(btn("처음부터 다시",restart,{cls:"wide"}));N.appendChild(r);
+}
+
+/* ───────── 흐르는 시간 ───────── */
+setInterval(function(){
+  const now=Date.now(),dt=Math.min(1,(now-lastT)/1000);lastT=now;
+  if(view==="play"&&s.phase==="play"&&!s.light&&!document.hidden&&s.turns>0&&!queue.length){
+    const gap=(now-s.lastCrank)/1000;
+    if(s.dark0===0&&gap>6){s.dark0=1;say(["아직 어둡다. 몇 바퀴 더 돌려 볼까."])}
+    else if(s.dark0===1&&gap>16){s.dark0=2;say(["손잡이에 온기가 남아 있다. 조금만 더 돌리면 될 것 같다."])}
+  }
+  if(view!=="play"||s.phase!=="play"||!s.light||document.hidden)return;
+  s.clock+=dt;s.quiet+=dt;s.aP+=dt;if(!busy())s.idle+=dt;
+  let moved=false;
+  if(s.spin){s.spin.acc+=dt;while(s.spin&&s.spin.acc>=1){s.spin.acc-=1;doCrank();moved=true;s.spin.left--;if(s.spin.left<=0){s.spin=null;say(["손을 뗀다. 팔이 묵직하다."])}}}
+  const per=leak();
+  while(s.aP>=per){s.aP-=per;if(s.power>0){s.power--;moved=true;
+    if(s.power===0&&s.job&&s.job.id==="move"){}else if(s.power===0&&s.done.window&&!s.seen.glass&&s.loc==="cabin"){s.seen.glass=true;s.seen.stall=true;mood("anx",1);mood("cur",1);
+      say(["선실이 어두워지자 유리에 비치던 얼굴이 사라진다.","그 자리에 바깥이 보인다. 낮은 능선. 그 위에 서 있는 것.","눈이 익기 전에 그것은 없다."],"",1300);
+      note("조명이 꺼진 동안 창밖에 능선이 보였다. 능선 위에 형체 하나. 다시 보았을 때는 없었다.")}
+    else if(s.power===0){if(!s.seen.stall){s.seen.stall=true;say(["발전기가 멎는다. 비상등이 어두워진다.","손끝의 감각이 먼저 사라진다."]);mood("anx",1)}else say(["다시 어두워진다. 선실의 발전기를 돌려야 한다."])}
+    else if(s.power<3&&!s.seen.bg_roomDim&&s.loc==="cabin")showBg("roomDim")}}
+  const wr=s.choice.f1==="life"?-1/20:(s.done.locker?1/75:1/26)*(s.power===0?1.6:1);
+  s.warm=clamp(s.warm-wr*dt,0,10);s.hunger=clamp(s.hunger-dt/30,0,10);
+  if(s.day>=2){s.aO+=dt;const op=s.choice.f1==="life"?60:40;while(s.aO>=op){s.aO-=op;s.oxy=Math.max(0,s.oxy-1);moved=true}
+    if(s.oxy<=3&&!s.daily.thin){s.daily.thin=true;say(["공기가 무겁다. 숨이 얕아진다.","통로의 정제기를 돌려야 한다."])}}
+  if(s.warm<=3&&!s.daily.cold){s.daily.cold=true;mood("anx",1);say(["춥다. 숨이 다시 하얗게 나온다. 손가락이 굳는다.",s.done.locker?"발전기 몸체는 돌린 만큼 따뜻하다. 손을 대면 풀린다.":"걸칠 것이 필요하다. 그 전까지는 발전기 몸체에 손을 녹인다."])}
+  if(s.hunger<=2&&!s.daily.hungry){s.daily.hungry=true;say(["속이 쓰리다. 뭔가 먹어야 한다."])}
+  if(danger(dt))return;
+  if(s.job){s.job.t+=dt;if(s.job.t>=s.job.dur)finishJob()}
+  if(s.mach){s.mach.t+=dt;if(s.mach.t>=s.mach.dur)finishMach()}
+  if(s.day===1&&s.idle>=60&&!s.seen.knock){s.seen.knock=true;mood("anx",1);
+    say(["문 너머에서 소리가 난다. 한 번.","무언가를 바닥에 내려놓는 소리다.","기다린다. 다시는 나지 않는다."],"",1300);
+    note("통로 쪽에서 소리 1회. 선체가 식으며 나는 소리와는 다르다.")}
+  if(s.day===4&&s.clock>=DAY*.6&&!s.seen.nightScene){s.seen.nightScene=true;moved=true;
+    const l=["해가 지는 것이 아니다. 하늘 전체가 어두워진다.",s.seen.cam?"카메라 화면 가장자리에 낮은 형체가 들어온다. 하나가 아니다.":"창밖 어둠 속에 낮은 형체가 들어온다. 하나가 아니다.","그것들은 빛이 닿는 경계에서 멈춘다. 경계 안으로는 들어오지 않는다. 경계 밖에서, 이쪽을 향해 있다."];
+    if(s.choice.f1==="lamp")l.push("첫날 밤 빛의 가장자리에서 움직인 것은 바람이 아니었다.");
+    l.push("북동쪽 능선 위에 불빛이 하나 있다. 이 배의 것이 아니다. 일정한 간격으로 밝아졌다 어두워진다.");rec("ridgelight");
+    note("야간에 북동쪽 능선에서 광원 1개 관측. 주기적으로 밝기가 변한다. 손으로 돌리는 발전기의 주기와 비슷하다.");say(l,"",1500)}
+  if(s.clock>=DAY*.5&&!s.daily.half){s.daily.half=true;if(s.day===1)say(["비상등의 붉은빛에 눈이 익었다. 깨어난 지 한참 되었다."])}
+  if(s.clock>=DAY*.82&&!s.daily.late&&s.day<5){s.daily.late=true;say(["눈꺼풀이 무겁다. 오래 버티지는 못한다."])}
+  if(s.day===5&&s.clock>=DAY&&!s.daily.over){s.daily.over=true;say(["밤이 되었다. 표시등은 계속 켜져 있다.","오늘은 정할 때까지 눕지 않는다."])}
+  if(s.quiet>=15&&!queue.length){s.quiet=0;if(Math.random()<.7)maybeAside(1);else say([AMB[s.ambI++%AMB.length]],"aside")}
+  if(moved&&!s.spin&&!s.job&&s.power>0&&s.power<=6&&now-s.lastCrank>5000&&s.clock-s.nudgeAt>30&&!queue.length){s.nudgeAt=s.clock;say([NUDGE[s.nudgeI++%NUDGE.length]])}
+  if(s.day<5&&s.clock>=DAY){endDay(false);return}
+  if(s.streak>=6&&!rolling()){s.streak=0;moved=true}
+  if(moved)render();else renderStatus();
+},250);
+
+/* ───────── 화면 ───────── */
+function btn(label,fn,opt){
+  opt=opt||{};const b=el("button",opt.cls||"",label);b.type="button";
+  if(opt.cool)b.appendChild(el("span","cool"));if(opt.off)b.disabled=true;b.addEventListener("click",()=>fn(b));return b;
+}
+function grp(name){const g=el("div","grp");g.appendChild(el("h3","",name));return g}
+function bar(v,max){const low=v/max<=.3;return'<span class="bar'+(low?" low":"")+'"><b style="width:'+Math.round(v/max*100)+'%"></b></span>'}
+function progress(b,j){const c=b.querySelector(".cool"),pct=clamp(j.t/j.dur,0,1),rest=Math.max(.05,j.dur-j.t);
+  c.style.width=(pct*100)+"%";requestAnimationFrame(()=>requestAnimationFrame(()=>{c.style.transition="width "+rest+"s linear";c.style.width="100%"}))}
+function renderStatus(){
+  const lit=s.light&&s.phase!=="title";
+  document.documentElement.style.setProperty("--glow",lit?(Math.min(1,.3+s.power*.06)*(s.dim?.45:1)).toFixed(2):"0");
+  document.body.classList.toggle("breathing",lit&&s.power<3);
+  const G=$("gauges");if(s.turns===0||s.phase==="title"){G.innerHTML='<dt class="none">아무것도 없다</dt>';return}
+  const h=Math.max(0,Math.ceil((DAY-s.clock)/HOUR)),over=["night","journal","end","dying","dead"].includes(s.phase)||s.clock>=DAY;
+  const gz=(k,v,max)=>{const n=left(k);return n?'<span class="warn">위험 '+n+'초</span>':bar(v,max)};
+  let x="<dt>전력</dt><dd>"+s.power+" / "+cap()+"</dd>";
+  if(s.light){x+="<dt>소모</dt><dd>"+(Math.round(leak()*10)/10)+"초에 1</dd>";
+    if(s.day>=2)x+="<dt>산소</dt><dd>"+gz("oxy",s.oxy,20)+"</dd>";
+    x+="<dt>체온</dt><dd>"+gz("warm",s.warm,10)+"</dd><dt>포만</dt><dd>"+gz("hunger",s.hunger,10)+"</dd>";
+    if(s.food)x+="<dt>식량</dt><dd>"+s.food+"</dd>";
+    if(s.day>=2)x+="<dt>필터</dt><dd>"+s.filters+"</dd>";
+    if(s.day>=3||s.samples)x+="<dt>표본</dt><dd>"+s.samples+"</dd><dt>분석</dt><dd>"+s.data+(s.mach?" · 도는 중":"")+"</dd>";
+    if(s.seen.contam)x+="<dt>선내 오염</dt><dd>"+s.contam+"</dd>";
+    if(s.seen.battery)x+="<dt>축전지</dt><dd>1</dd>";
+    x+="<dt>밤까지</dt><dd>"+(over?"밤":h+"시간")+"</dd>";
+    if(s.done.window)x+="<dt>바깥</dt><dd>"+(s.seen.nightScene?"형체":s.seen.glass?"능선":s.day>=4?"잿빛":"검다")+"</dd>"}
+  G.innerHTML=x;
+}
+function renderLocs(){
+  const P=$("place");P.innerHTML="";
+  if(!s.light||s.phase==="title"){P.appendChild(el("span","on","어둠"));return}
+  if(["dying","dead"].includes(s.phase)){P.appendChild(el("span","on",s.phase==="dead"?"생존 실패":LOC[s.loc].name));return}
+  if(["night","journal","end"].includes(s.phase)){P.appendChild(el("span","on",s.phase==="end"?"1막 끝":"밤"));return}
+  P.appendChild(el("span","on",LOC[s.loc].name));
+}
+function render(){
+  renderStatus();renderLocs();
+  $("day").textContent=(s.day>1||s.done.term)&&s.phase!=="title"?"조사 "+s.day+"일차":"";
+  const goal=$("goal");let gt="";
+  if(s.phase==="play"||s.phase==="fork"){
+    if(s.day===1&&s.done.door)gt="문을 열려면 전력이 더 있어야 한다.";
+    if(s.day>=2&&s.done.h_cryo&&!s.locs.includes("cryo"))gt=s.day<5?"동면실을 열려면 전력 40이 필요하다. 지금 용량으로는 닿지 않는다.":"동면실을 열려면 전력 40이 필요하다.";
+    if(s.locs.includes("cryo")&&s.helper==null)gt="깨울 수 있는 사람은 둘. 오늘은 한 사람.";}
+  goal.hidden=!gt;goal.textContent=gt;
+  const A=$("acts"),H=$("hint"),K=$("look"),N=$("night"),L=$("log");A.innerHTML="";H.hidden=true;K.hidden=true;N.hidden=true;N.innerHTML="";
+  L.hidden=["journal","end","title","dead"].includes(s.phase);
+  if(s.phase==="intro"||s.phase==="night"||s.phase==="dying")return;
+  if(s.phase==="dead"){renderDead();return}
+  if(s.phase==="title"){
+    const j=el("div","journal");j.appendChild(el("h2","","저장된 기록"));j.appendChild(el("p","","조사 "+saved.day+"일차 아침에서 멈춰 있다."));
+    const r=el("div","row");r.appendChild(btn("이어서 한다",()=>{s=saved;saved=null;resume()}));r.appendChild(btn("처음부터 한다",()=>{saved=null;try{localStorage.removeItem(SAVE)}catch(e){}s=fresh();begin()}));
+    N.hidden=false;N.appendChild(j);N.appendChild(r);return}
+  if(s.phase==="journal"){
+    N.hidden=false;N.appendChild(journalBox(s.journal[s.journal.length-1]));
+    const r=el("div","row");r.appendChild(btn("다음 날을 맞는다",nextDay));N.appendChild(r);return}
+  if(s.phase==="end"){renderEnd();return}
+  if(s.phase==="fork"){
+    const f=FORKS[s.fork],g=grp(f.title);Object.keys(f.opts).forEach(k=>g.appendChild(btn("◆ "+f.opts[k].label,()=>choose(k),{cls:"fork wide"})));
+    if(f.cancel)g.appendChild(btn(f.cancel,()=>{s.phase="play";s.fork=null;render()},{cls:"wide"}));A.appendChild(g);return}
+  if(s.phase==="pick"){renderPick(A);return}
+  const bz=busy(),dark=s.power<1;
+  if(s.loc==="cabin"){
+    const r=el("div","row");
+    if(s.spin){r.appendChild(btn("돌리는 중 · 남은 "+s.spin.left+"바퀴"+(rolling()?" +2":""),()=>{},{off:true,cls:"busy"}));r.appendChild(btn("멈춘다",stopSpin,{cls:"mini"}))}
+    else{r.appendChild(btn(rolling()?"발전기를 돌린다 +2":"발전기를 돌린다",crank,{cool:true,off:cooling||bz}));
+      if(s.pick&&!bz)[1,5,10,20].forEach(n=>r.appendChild(btn(n+"바퀴",()=>spin(n),{cls:"mini"})))}
+    A.appendChild(r);}
+  if(!s.light)return;
+  const C=el("div","cols"),G={"살핀다":grp("살핀다"),"한다":grp("한다"),"그 밖에":grp("그 밖에")};let why="";
+  ACTS.forEach(a=>{
+    if(a.from>s.day||(a.loc!=="*"&&a.loc!==s.loc))return;
+    const run=a.mach?s.mach:s.job,mine=run&&run.id===a.id;
+    if(!mine&&(s.done[a.id]||s.daily[a.id]||(a.need&&!a.need())))return;
+    const c=costOf(a),blocked=(a.ok&&!a.ok())||s.power<c;
+    const off=mine||dark||blocked||(a.mach?!!s.mach:bz);
+    const b=btn(a.label+(c&&!mine?" −"+c:""),()=>startJob(a),{off:off,cool:mine,cls:mine?"busy":""});
+    if(mine)progress(b,run);if(blocked&&!mine&&a.why&&!why&&!dark)why=a.id==="h_open"?(cap()<40?"전력 40이 필요하다. 지금 용량은 "+cap()+". 조명 회로를 돌려야 한다.":a.why+" 지금 "+s.power+"."):(a.ok&&!a.ok()?a.why:"전력이 모자란다.");
+    G[a.g].appendChild(b)});
+  if(s.loc==="cabin"){G["그 밖에"].appendChild(btn(s.dim?"비상등을 올린다":"비상등을 낮춘다",dimmer,{off:bz}));
+    if(!s.seen.battery)G["그 밖에"].appendChild(btn("의자를 세운다",chair,{off:bz}));
+    if(s.day<5&&s.clock>=DAY*.3)G["그 밖에"].appendChild(btn("일찍 눕는다",()=>endDay(true),{off:bz}))}
+  if(IDLE[s.loc])G["그 밖에"].appendChild(btn(IDLE[s.loc].label,idleAct,{off:bz}));
+  const ex=exits();
+  if(ex.length){const gm=grp("이동");ex.forEach(l=>{const mine=s.job&&s.job.id==="move"&&s.job.to===l,b=btn(TO[l],()=>walk(l),{off:bz,cool:mine,cls:mine?"busy":""});if(mine)progress(b,s.job);gm.appendChild(b)});C.appendChild(gm)}
+  ["살핀다","한다","그 밖에"].forEach(k=>{if(G[k].children.length>1)C.appendChild(G[k])});
+  ["f1","f3","f4","f5"].forEach(id=>{if(!forkReady(id))return;const f=FORKS[id],g=grp(f.title),short=f.cost&&s.power<f.cost;
+    g.appendChild(btn("◆ "+f.btn,()=>openFork(id),{cls:"fork",off:bz||short}));
+    if(f.cost)g.appendChild(el("p","hint",short?"전력 "+f.cost+" 필요. 지금 "+s.power+".":bz?"하던 일을 마친 뒤에.":"지금 열 수 있다."));C.appendChild(g)});
+  A.appendChild(C);
+  let hint="";
+  if(dark&&!bz)hint=s.loc==="cabin"?"어둡다. 발전기부터 돌려야 한다.":"어둡다. 선실로 돌아가 발전기를 돌려야 한다.";
+  else if(!s.seen.tut)hint="일을 하는 동안에는 발전기를 돌릴 수 없다. 전력은 계속 샌다.";
+  else if(s.day>=2&&!s.seen.left)hint="문이 열렸다. 이동의 '통로로'를 누르면 선실 밖으로 나간다. 다른 방은 모두 통로를 거쳐서 간다.";
+  else if(s.loc!=="cabin"&&!s.seen.tut2)hint="발전기는 선실에만 있다. 전력이 떨어지면 통로를 거쳐 돌아가야 한다. 걷는 데도 시간이 든다.";
+  else if(why)hint=why;
+  if(hint){H.hidden=false;H.textContent=hint}
+  K.hidden=false;K.innerHTML="";
+  const here=LOC[s.loc].bg;[here].concat(Object.keys(BG).filter(k=>BG[k].at===s.loc&&s.seen["bg_"+k])).forEach(k=>{
+    const b=btn(BG[k].n,()=>setEnv(k));b.dataset.k=k;K.appendChild(b)});markLook();
+}
+function renderPick(A){
+  const g=el("div","plates");
+  PODS.forEach((h,i)=>{const b=el("button","plate"+(s.pickSel===i?" sel":""));b.type="button";
+    b.appendChild(el("strong","",h.no+" · "+h.f+" · "+h.c));b.appendChild(el("small","",h.r));
+    if(s.seen.files)b.appendChild(el("small","rel",h.rel));
+    if(s.marks.includes(i))b.appendChild(el("small","mark","이음매에 결로"));
+    b.addEventListener("click",()=>{s.pickSel=i;render()});g.appendChild(b)});
+  A.appendChild(g);const r=el("div","row");
+  if(s.pickSel!=null){r.appendChild(btn("◆ "+PODS[s.pickSel].no+"번을 깨운다",()=>pickHelper(s.pickSel),{cls:"fork wide"}))}
+  A.appendChild(r);
+  const H=$("hint");H.hidden=false;H.textContent=s.pickSel==null?"명판을 눌러 고른다. 고를 때까지 시간은 흐르지 않는다.":"되돌릴 수 없는 선택이다.";
+}
+function renderEnd(){
+  const N=$("night");N.hidden=false;N.appendChild(journalBox(s.journal[s.journal.length-1]));
+  const h=PODS[s.helper];
+  N.appendChild(el("p","hint","1막은 여기까지입니다. 6일차에 "+h.no+"번 "+h.f+"자가 깨어납니다. 지난 일지는 기록에서 볼 수 있습니다."));
+  const r=el("div","row");r.appendChild(btn("처음부터 다시",restart));N.appendChild(r);
+  const m=s.mood,bad=s.pods.map((b,i)=>b?PODS[i].no:null).filter(Boolean);
+  let hid=0;["worn","tally","battery","dream","glass","knock"].forEach(k=>{if(s.seen[k])hid++});if(s.done.locker2)hid++;
+  N.appendChild(el("p","debug","시험용 표시 · 냉정 "+m.calm+" · 호기심 "+m.cur+" · 불안 "+m.anx+" · 집착 "+m.obs+" · 접근도 "+s.approach.toFixed(1)+" · 선내 오염 "+s.contam+" · 표본 "+s.samples+" · 분석 "+s.data+" · 식량 "+s.food+" · 산소 "+s.oxy+" · 발전기 "+s.turns+"회 · 숨은 것 "+hid+"/7"));
+  N.appendChild(el("p","debug","기록: "+(Object.keys(s.rec).join(", ")||"없음")+" · 균열 장치: "+(bad.join(", ")||"없음")+" · 고른 사람 감염: "+(s.pods[s.helper]?"예":"아니오")));
+}
+
+/* ───────── 기록 탭, 재시작 ───────── */
+function setView(v){
+  view=v;const r=v==="record";if(r)flush();lastT=Date.now();
+  $("tabPlay").setAttribute("aria-selected",String(!r));$("tabRec").setAttribute("aria-selected",String(r));
+  $("envCol").hidden=r;$("mainCol").hidden=r;$("sideCol").hidden=r;$("record").hidden=!r;
+  if(r)renderRecord();else render();
+}
+const ONCE=new Set(CRANK.concat(["손을 뗀다. 팔이 묵직하다.","손을 뗀다.","전력이 더는 들어가지 않는다. 축전 용량이 찼다.","다시 어두워진다. 선실의 발전기를 돌려야 한다.","발전기가 탄력을 받는다. 한 바퀴에 들어오는 양이 늘었다.","멈추면 다시 무거워질 것이다."]).concat(NUDGE).concat(AMB));
+Object.keys(MOVE).forEach(k=>MOVE[k].forEach(x=>ONCE.add(x)));
+function story(){
+  /* 기록을 장과 문단으로 묶는다. 되풀이되는 짧은 문장은 장마다 한 번만 남긴다. */
+  const out=[{k:"ch",t:"1일차"}];let para=[],kind="",used={};
+  const end=()=>{if(para.length){out.push({k:kind,lines:para});para=[]}};
+  s.hist.forEach(x=>{
+    if(x.c==="act"){if(x.t.indexOf("발전기를")===0)return;end();const m=/^— (\d+)일차 —$/.exec(x.t);if(m){out.push({k:"ch",t:m[1]+"일차"});used={}}return}
+    if(x.c==="journal"){end();out.push({k:"journal",day:x.t});return}
+    if(ONCE.has(x.t)){if(used[x.t])return;used[x.t]=true}
+    const k=x.c==="n"||x.c===""?"n":x.c;if(k!==kind)end();kind=k;para.push(x.t)});
+  end();return out;
+}
+function renderRecord(){
+  const R=$("record");R.innerHTML="";
+  const a=el("div","story");a.appendChild(el("h2","","이야기"));
+  if(!s.hist.length)a.appendChild(el("p","empty","아직 기록이 없습니다."));
+  else story().forEach(n=>{
+    if(n.k==="ch")a.appendChild(el("h3","",n.t));
+    else if(n.k==="journal"){const j=s.journal.find(x=>x.day===n.day);if(j)a.appendChild(journalBox(j))}
+    else if(n.k==="term"){const p=el("p","term");n.lines.forEach((l,i)=>{if(i)p.appendChild(document.createElement("br"));p.appendChild(document.createTextNode(l))});a.appendChild(p)}
+    else a.appendChild(el("p",n.k==="n"?"":n.k,n.lines.join(" ")))});
+  R.appendChild(a);
+  const c=el("div");c.appendChild(el("h2","","지난 판"));
+  if(!runs.length)c.appendChild(el("p","empty","1막을 끝낸 판이 없습니다."));
+  else{const w=el("div","runs");runs.forEach((r,i)=>{const last=r.journal[r.journal.length-1];w.appendChild(journalBox(last," · "+(runs.length-i)+"번째 판 · "+r.helper))});c.appendChild(w)}R.appendChild(c);
+}
+function restart(){if(timer){clearTimeout(timer);timer=null}queue=[];cooling=false;try{localStorage.removeItem(SAVE)}catch(e){}s=fresh();resetAsk();setView("play");begin()}
+function resetAsk(){const B=$("restartBox");B.innerHTML="";const b=btn("재시작.",askRestart);b.id="restart";B.appendChild(b)}
+function askRestart(){const B=$("restartBox");B.innerHTML="<span>처음부터 다시 할까요?</span>";B.appendChild(btn("다시 시작.",restart,{cls:"danger"}));B.appendChild(btn("취소.",resetAsk))}
+$("tabPlay").addEventListener("click",()=>setView("play"));
+$("tabRec").addEventListener("click",()=>setView("record"));
+$("restart").addEventListener("click",askRestart);
+
+/* ───────── 시작 ───────── */
+let saved=null;
+function redrawLog(){const L=$("log");L.innerHTML="";s.log.slice().reverse().forEach(l=>{const p=el("p",l.c+(l.g?" gap":""),l.t);p.style.animation="none";L.insertBefore(p,L.firstChild)})}
+function begin(){$("log").innerHTML="";s.env={name:"어둠",lines:["보이지 않는다."]};drawEnv(false);render();say(INTRO,"",1700,()=>{s.phase="play";render()})}
+function resume(){s.job=null;s.spin=null;s.mach=null;s.pick=false;if(s.choice.f5&&s.helper==null)s.phase="pick";else if(["night","intro","dying"].includes(s.phase))s.phase="play";if(!s.dz){s.dz={};s.dzs={}}lastT=Date.now();redrawLog();drawEnv(false);render()}
+function start(data){
+  if(data&&data.s&&data.s.v===2&&data.s.phase!=="intro"){s=data.s;resume();return}
+  try{const j=JSON.parse(localStorage.getItem(SAVE)||"null");if(j&&j.v===2&&j.day>=2)saved=j}catch(e){}
+  if(saved){s.phase="title";render();return}
+  begin();
+}
+const hot=window.claude&&window.claude.hot;
+if(hot&&hot.snapshot)hot.snapshot(()=>{flush();return{s:s}});
+if(hot&&hot.ready)hot.ready(start);else start((hot&&hot.data)||{});
+})();
+</script>
+
+</body>
+</html>
